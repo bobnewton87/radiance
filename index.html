@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Radiance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header id="header">
+            <h1><span class="accent">RADIANCE</span></h1>
+            <div style="display:flex;align-items:center;gap:10px">
+                <div id="phase-badge"></div>
+                <button id="menu-btn">Plans</button>
+            </div>
+        </header>
+        <main id="content"></main>
+        <nav id="tabs">
+            <button class="tab active" data-tab="today">Today</button>
+            <button class="tab" data-tab="calendar">Week</button>
+            <button class="tab" data-tab="program">Program</button>
+            <button class="tab" data-tab="nourish">Nourish</button>
+            <button class="tab" data-tab="journey">Journey</button>
+        </nav>
+    </div>
+    <div id="overlay" class="hidden"></div>
+    <script src="app.js"></script>
+</body>
+</html>
