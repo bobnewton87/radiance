@@ -2,22 +2,22 @@
 // RADIANCE — 48-Week Women's Wellness Program
 // Cardio + Toning + Hip Rehab + Nutrition Guidance
 // ============================================================
-const APP_VERSION = 1;
+const APP_VERSION = 2;
 
 // ---- EXERCISE DATABASE ----
 const EX = {
   // CARDIO
-  stair_int:{name:'Stair Stepper Intervals',cat:'cardio',yt:'https://www.youtube.com/results?search_query=stair+stepper+interval+workout+beginner',
+  stair_int:{name:'Stair Stepper Intervals',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+stair+stepper+interval+workout+beginner',
     form:['Start at a comfortable pace for 2-3 min to warm up','Increase speed or resistance for the "work" interval','Drop back to easy pace for recovery interval','Keep posture tall \u2014 light grip on rails, don\'t lean on them','Breathe rhythmically \u2014 in through nose, out through mouth']},
-  stair_steady:{name:'Stair Stepper Steady',cat:'cardio',yt:'https://www.youtube.com/results?search_query=stair+stepper+workout+steady+state+fat+burn',
+  stair_steady:{name:'Stair Stepper Steady',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+stair+stepper+workout+steady+state+fat+burn',
     form:['Find a pace you can maintain while breathing comfortably','Stand tall, light grip on rails','Engage your core \u2014 imagine pulling your belly button to your spine','Full steps \u2014 press through your whole foot']},
-  tread_inc:{name:'Incline Treadmill Intervals',cat:'cardio',yt:'https://www.youtube.com/results?search_query=incline+treadmill+walking+workout+intervals',
+  tread_inc:{name:'Incline Treadmill Intervals',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+incline+treadmill+walking+workout+intervals',
     form:['Start flat for 2-3 min to warm up','Alternate between high incline and low incline every 2 min','Speed: 3.0-3.5 mph \u2014 brisk walk, never run','NEVER hold sustained max incline \u2014 always interval it','Light hand touch on rails only for balance if needed']},
-  tread_hiit:{name:'Treadmill HIIT Walk',cat:'cardio',yt:'https://www.youtube.com/results?search_query=treadmill+hiit+walking+workout+fat+burn',
+  tread_hiit:{name:'Treadmill HIIT Walk',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+treadmill+hiit+walking+workout+fat+burn',
     form:['Alternate between fast walk (3.8-4.2 mph) and easy walk (2.5-3.0 mph)','30-60 seconds fast, 60-90 seconds easy','Keep incline at 1-3% for the HIIT portion','Hold the rails only if you need to for safety','This burns more than steady walking \u2014 the intervals are the magic']},
-  elliptical:{name:'Elliptical',cat:'cardio',yt:'https://www.youtube.com/results?search_query=elliptical+workout+proper+form+beginner',
+  elliptical:{name:'Elliptical',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+elliptical+workout+proper+form+beginner',
     form:['Stand tall, core engaged','Push and pull with arms \u2014 use the handles actively','Try both forward and backward pedaling (backward hits glutes more)','Moderate resistance \u2014 should feel challenging but sustainable','Great low-impact option that\'s easy on hips and knees']},
-  bike:{name:'Stationary Bike',cat:'cardio',yt:'https://www.youtube.com/results?search_query=stationary+bike+workout+beginner+intervals',
+  bike:{name:'Stationary Bike',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+stationary+bike+workout+beginner+intervals',
     form:['Adjust seat height: slight bend in knee at bottom of pedal','Sit tall, relaxed shoulders','Alternate resistance levels for intervals','Easiest machine on your hips and joints','Great for days when things feel sore']},
   rower:{name:'Rowing Machine',cat:'cardio',yt:'https://www.youtube.com/results?search_query=rowing+machine+form+tutorial+beginner+woman',
     form:['Drive with LEGS first, then lean back, then pull arms','Return in reverse: arms, lean forward, bend knees','Keep core braced throughout','Don\'t pull with just your arms \u2014 80% of rowing is legs','Excellent full-body cardio \u2014 works everything']},
@@ -31,7 +31,7 @@ const EX = {
     form:['Lie on back, knees bent, feet flat on floor','Drive hips up by squeezing glutes HARD','Hold at top for 1-2 seconds','Lower with control','This is one of the best exercises for your glutes and hip health']},
   step_up:{name:'Step Up',cat:'tone',yt:'https://www.youtube.com/results?search_query=dumbbell+step+up+form+women',
     form:['Face a bench or sturdy step','Step up with one foot, drive through that heel','Stand fully on top','Step down with control','Use light dumbbells at sides or bodyweight']},
-  wall_sit:{name:'Wall Sit',cat:'tone',yt:'https://www.youtube.com/results?search_query=wall+sit+proper+form+tutorial',
+  wall_sit:{name:'Wall Sit',cat:'tone',yt:'https://www.youtube.com/results?search_query=female+wall+sit+proper+form+tutorial',
     form:['Back flat against wall, slide down until thighs parallel','Knees at 90\u00b0, directly over ankles','Hold the position \u2014 breathe!','Great for quad endurance without impact']},
   db_shoulder:{name:'Shoulder Press',cat:'tone',yt:'https://www.youtube.com/results?search_query=dumbbell+shoulder+press+form+women+light+weight',
     form:['Sit or stand with light dumbbells at shoulder height','Press straight up overhead','Lower with control back to shoulders','Keep core tight \u2014 don\'t arch your back','Go light \u2014 shoulders respond to form, not heavy weight']},
@@ -45,57 +45,57 @@ const EX = {
     form:['Hinge forward slightly, elbow bent at 90\u00b0','Extend arm straight back, squeezing tricep','Return to 90\u00b0 with control','Light weight \u2014 you\'ll feel this quickly','Tones the back of the arm beautifully']},
 
   // HIP REHAB
-  hip_circle:{name:'Hip Circles',cat:'hip',yt:'https://www.youtube.com/results?search_query=hip+circles+warm+up+mobility',
+  hip_circle:{name:'Hip Circles',cat:'hip',yt:'https://www.youtube.com/results?search_query=female+hip+circles+warm+up+mobility',
     form:['Stand on one leg (hold something for balance)','Make large circles with the other leg','10 circles forward, 10 backward, each leg','Warms up the hip joint and activates stabilizers']},
-  clamshell:{name:'Clamshell',cat:'hip',yt:'https://www.youtube.com/results?search_query=clamshell+exercise+glute+medius+form',
+  clamshell:{name:'Clamshell',cat:'hip',yt:'https://www.youtube.com/results?search_query=female+clamshell+exercise+glute+medius+form',
     form:['Lie on side, knees bent at 45\u00b0, feet together','Open top knee like a clamshell, keeping feet touching','Squeeze your glute \u2014 you should feel it on the SIDE of your hip','Lower slowly','THIS is the #1 exercise for your hip pain \u2014 it strengthens the glute medius']},
-  side_raise:{name:'Side-Lying Leg Raise',cat:'hip',yt:'https://www.youtube.com/results?search_query=side+lying+leg+raise+hip+abduction+form',
+  side_raise:{name:'Side-Lying Leg Raise',cat:'hip',yt:'https://www.youtube.com/results?search_query=female+side+lying+leg+raise+hip+abduction+form',
     form:['Lie on side, bottom leg bent for stability','Raise top leg straight up, leading with heel','Don\'t rotate hip forward \u2014 keep toes pointing forward or slightly down','Lower slowly','Targets the glute medius \u2014 the muscle that stabilizes your hip']},
-  band_walk:{name:'Banded Lateral Walk',cat:'hip',yt:'https://www.youtube.com/results?search_query=banded+lateral+walk+glute+medius+form',
+  band_walk:{name:'Banded Lateral Walk',cat:'hip',yt:'https://www.youtube.com/results?search_query=female+banded+lateral+walk+glute+medius+form',
     form:['Place mini band just above knees (or ankles for harder)','Slight squat position, feet hip-width','Step sideways, keeping tension on the band','10 steps one way, 10 steps back','Keep your hips level \u2014 don\'t waddle']},
   fire_hydrant:{name:'Fire Hydrant',cat:'hip',yt:'https://www.youtube.com/results?search_query=fire+hydrant+exercise+glute+form+women',
     form:['On hands and knees, core tight','Lift one knee out to the side (like a dog at a fire hydrant)','Keep knee bent at 90\u00b0','Squeeze at the top, lower slowly','Great for hip mobility AND glute med strength']},
-  sl_bridge:{name:'Single-Leg Glute Bridge',cat:'hip',yt:'https://www.youtube.com/results?search_query=single+leg+glute+bridge+form+tutorial',
+  sl_bridge:{name:'Single-Leg Glute Bridge',cat:'hip',yt:'https://www.youtube.com/results?search_query=female+single+leg+glute+bridge+form+tutorial',
     form:['Lie on back, one foot flat on floor, other leg extended up','Drive hips up using the grounded leg only','Squeeze glute hard at top','Lower with control','If too hard, start with regular glute bridges']},
 
   // CORE
   plank:{name:'Plank',cat:'core',yt:'https://www.youtube.com/results?search_query=plank+proper+form+women+beginner',
     form:['Forearms on floor, body in straight line from head to heels','Squeeze everything: glutes, core, quads','Don\'t let hips sag or pike up','Breathe! Don\'t hold your breath','On knees is a perfectly valid modification']},
-  dead_bug:{name:'Dead Bug',cat:'core',yt:'https://www.youtube.com/results?search_query=dead+bug+exercise+form+tutorial+core',
+  dead_bug:{name:'Dead Bug',cat:'core',yt:'https://www.youtube.com/results?search_query=female+dead+bug+exercise+form+tutorial+core',
     form:['Lie on back, arms straight up, knees bent 90\u00b0','Slowly extend opposite arm and leg toward floor','Keep lower back pressed into the floor \u2014 this is key','Return to start, switch sides','Gentle but incredibly effective for core stability']},
-  bird_dog:{name:'Bird Dog',cat:'core',yt:'https://www.youtube.com/results?search_query=bird+dog+exercise+form+core+stability',
+  bird_dog:{name:'Bird Dog',cat:'core',yt:'https://www.youtube.com/results?search_query=female+bird+dog+exercise+form+core+stability',
     form:['On hands and knees, core tight','Extend opposite arm and leg simultaneously','Hold for 1-2 seconds, return to start','Keep hips level \u2014 don\'t rotate','Builds core stability and balance']},
   side_plank:{name:'Side Plank',cat:'core',yt:'https://www.youtube.com/results?search_query=side+plank+form+women+beginner+modification',
     form:['Lie on side, forearm on floor, body in straight line','Lift hips off floor','Hold, breathing steadily','From knees is a great modification','Strengthens obliques and hip stabilizers']},
-  bike_crunch:{name:'Bicycle Crunch',cat:'core',yt:'https://www.youtube.com/results?search_query=bicycle+crunch+proper+form+tutorial',
+  bike_crunch:{name:'Bicycle Crunch',cat:'core',yt:'https://www.youtube.com/results?search_query=female+bicycle+crunch+proper+form+tutorial',
     form:['Lie on back, hands behind head','Bring opposite elbow to opposite knee','Extend the other leg straight','Alternate sides in a pedaling motion','Slow and controlled \u2014 no yanking on your neck']},
 
   // STRETCH
-  pigeon:{name:'Pigeon Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=pigeon+stretch+hip+opener+beginner',
+  pigeon:{name:'Pigeon Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+pigeon+stretch+hip+opener+beginner',
     form:['From hands and knees, bring one knee forward behind your wrist','Extend the other leg straight back','Sink hips toward the floor','Hold and breathe deeply','Amazing hip opener \u2014 targets the piriformis directly']},
-  figure4:{name:'Figure-4 Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=figure+4+stretch+piriformis+hip',
+  figure4:{name:'Figure-4 Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+figure+4+stretch+piriformis+hip',
     form:['Lie on back, cross one ankle over opposite knee','Pull the uncrossed leg toward your chest','You\'ll feel this deep in the crossed leg\'s hip/glute','Hold and breathe','Gentler alternative to pigeon \u2014 great for piriformis']},
-  piriformis_str:{name:'Piriformis Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=seated+piriformis+stretch+sciatica+relief',
+  piriformis_str:{name:'Piriformis Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+seated+piriformis+stretch+sciatica+relief',
     form:['Sit in chair, cross one ankle over opposite knee','Lean forward gently with a straight back','Feel the stretch deep in your hip/glute','Hold 30 seconds each side','Do this multiple times a day if your hip is bothering you']},
-  hip_flexor:{name:'Hip Flexor Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=hip+flexor+stretch+kneeling+form',
+  hip_flexor:{name:'Hip Flexor Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+hip+flexor+stretch+kneeling+form',
     form:['Kneel on one knee, other foot flat in front','Push hips forward gently','You\'ll feel the stretch in the front of the kneeling leg\'s hip','Keep torso tall','Tight hip flexors contribute to hip pain \u2014 this helps a lot']},
-  cat_cow:{name:'Cat-Cow',cat:'stretch',yt:'https://www.youtube.com/results?search_query=cat+cow+stretch+spine+mobility',
+  cat_cow:{name:'Cat-Cow',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+cat+cow+stretch+spine+mobility',
     form:['On hands and knees','Arch back up (cat) \u2014 tuck chin, round spine','Then drop belly down (cow) \u2014 lift head, open chest','Flow between positions with your breath','Wonderful for spine mobility and stress relief']},
-  quad_str:{name:'Quad Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=standing+quad+stretch+form',
+  quad_str:{name:'Quad Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+standing+quad+stretch+form',
     form:['Stand on one leg, grab the other foot behind you','Pull heel toward glute','Keep knees together','Hold something for balance if needed']},
-  ham_str:{name:'Hamstring Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=standing+hamstring+stretch+form',
+  ham_str:{name:'Hamstring Stretch',cat:'stretch',yt:'https://www.youtube.com/results?search_query=female+standing+hamstring+stretch+form',
     form:['Place one heel on a low step or bench','Keep that leg straight, hinge forward at hips','Feel the stretch behind the knee and up the back of the leg','Don\'t round your back \u2014 hinge from the hips']}
 };
 
 // ---- PHASES (12 \u00d7 4 weeks = 48 weeks) ----
 const PHASES = [
   // ========== BLOCK 1: FOUNDATION (Wks 1-12) ==========
-  {id:1,name:'Spark',tag:'Light the Fire',weeks:4,cardioDays:2,toneDays:1,mode:'foundation',
+  {id:1,name:'Spark',tag:'Light the Fire',weeks:4,cardioDays:3,toneDays:3,mode:'foundation',
     desc:'This is your beginning. Gentle cardio, hip rehab in every session, and light toning. The only goal: show up 3 times this week. That\'s it. You\'ve got this.',
     prog:'Hip rehab is the priority. Every warmup and cooldown includes hip exercises. Cardio stays easy and short. Toning uses light weight or bodyweight.',
     schedule:[
-      {type:'cardio',wk:'p1_cardio1'},{type:'rest'},{type:'tone',wk:'p1_tone'},{type:'rest'},
-      {type:'cardio',wk:'p1_cardio2'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p1_cardio1'},{type:'tone',wk:'p1_tone'},{type:'cardio',wk:'p1_cardio2'},
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p1_cardio3'},{type:'tone',wk:'p1_stretch'},{type:'rest'}
     ],
     workouts:{
       p1_cardio1:{name:'Cardio + Hip Care',focus:'Stair Stepper & Hip Activation',dur:'35 min',
@@ -106,7 +106,7 @@ const PHASES = [
           {id:'band_walk',sets:2,reps:'10 each direction',note:'Keep tension on the band. Feel the side of your hip working.'},
           {id:'fire_hydrant',sets:2,reps:'10 each side',note:'Slow and controlled. Squeeze at the top.'},
           {section:'Cardio'},
-          {id:'stair_int',duration:'15 min',protocol:'2 min moderate / 1 min easy, repeat',note:'Find a comfortable rhythm. You should be able to talk during the easy parts.'},
+          {id:'stair_int',duration:'30 min',protocol:'2 min moderate / 1 min easy, repeat',note:'Find a comfortable rhythm. You should be able to talk during the easy parts.'},
           {section:'Cool Down'},
           {id:'pigeon',hold:'30s each side',note:'Breathe into it. This directly targets the piriformis.'},
           {id:'figure4',hold:'30s each side',note:'Gentle pull. Feel the deep stretch in your hip.'},
@@ -138,8 +138,8 @@ const PHASES = [
           {id:'clamshell',sets:1,reps:'15 each side',note:'Wake up the glute med.'},
           {id:'band_walk',sets:1,reps:'10 each direction',note:'Feel the burn on the side of your hip.'},
           {section:'Cardio'},
-          {id:'elliptical',duration:'12 min',protocol:'Moderate pace, mix forward and backward',note:'Low impact, full body. Backward pedaling targets your glutes more.'},
-          {id:'bike',duration:'10 min',protocol:'Easy to moderate, change resistance every 2 min',note:'Easiest on your joints. Great active recovery option.'},
+          {id:'elliptical',duration:'25 min',protocol:'Moderate pace, mix forward and backward',note:'Low impact, full body. Backward pedaling targets your glutes more.'},
+          {id:'bike',duration:'20 min',protocol:'Easy to moderate, change resistance every 2 min',note:'Easiest on your joints. Great active recovery option.'},
           {section:'Extended Stretch'},
           {id:'pigeon',hold:'45s each side',note:'Longer hold today. Sink into it.'},
           {id:'figure4',hold:'45s each side',note:'Breathe deeply and relax into the stretch.'},
@@ -148,15 +148,60 @@ const PHASES = [
           {id:'cat_cow',reps:'10 slow breaths',note:'Spine mobility. Flow with your breath.'},
           {id:'quad_str',hold:'30s each side',note:'Balance on one leg or hold the wall.'},
           {id:'ham_str',hold:'30s each side',note:'Hinge from hips, not back.'}
+        ]},
+      p1_tone2:{name:'Core & Glutes',focus:'Core Stability & Hip Strength',dur:'35 min',
+        exercises:[
+          {section:'Hip Warm-Up'},
+          {id:'clamshell',sets:1,reps:'12 each side',note:'Activate the glute med.'},
+          {id:'hip_circle',reps:'10 each direction',note:'Loosen up.'},
+          {section:'Glutes & Core'},
+          {id:'glute_bridge',sets:3,reps:'20',note:'Squeeze hard at the top. 2 seconds each rep.'},
+          {id:'sl_bridge',sets:3,reps:'10 each',note:'Single leg builds stability. Use regular bridge if too hard.'},
+          {id:'fire_hydrant',sets:3,reps:'12 each',note:'Great for hip mobility and glute med.'},
+          {id:'plank',sets:3,reps:'40 seconds',note:'Hold strong. Breathe.'},
+          {id:'dead_bug',sets:3,reps:'10 each side',note:'Lower back stays pressed to floor.'},
+          {id:'bird_dog',sets:3,reps:'10 each side',note:'Balance and stability.'},
+          {id:'side_plank',sets:2,reps:'20s each side',note:'From knees is fine. Build up.'},
+          {section:'Cool Down'},
+          {id:'pigeon',hold:'30s each',note:'Hip opener.'},
+          {id:'cat_cow',reps:'8 breaths',note:'Spine flow. Use a massage gun on glutes and piriformis after if you have one.'}
+        ]},
+      p1_cardio3:{name:'Incline & Bike',focus:'Treadmill Intervals + Low Impact',dur:'40 min',
+        exercises:[
+          {section:'Hip Warm-Up'},
+          {id:'clamshell',sets:1,reps:'12 each',note:'Quick activation.'},
+          {section:'Cardio'},
+          {id:'tread_inc',duration:'25 min',protocol:'3.0 mph: 2 min at 6% / 2 min at 2%, alternate',note:'ALWAYS alternate incline \u2014 never sustained max. This prevents shin pain. If shins get sore, drop incline and increase speed slightly instead.'},
+          {id:'bike',duration:'20 min',protocol:'Alternate moderate/hard resistance every 2 min',note:'Low impact finish. Easy on your hips.'},
+          {section:'Cool Down'},
+          {id:'pigeon',hold:'30s each',note:'Hips.'},
+          {id:'hip_flexor',hold:'30s each',note:'Open up.'}
+        ]},
+      p1_stretch:{name:'Active Recovery & Mobility',focus:'Stretch, Foam Roll & Hip Care',dur:'35 min',
+        exercises:[
+          {section:'Light Movement'},
+          {id:'bike',duration:'20 min',protocol:'Very easy pace, minimal resistance',note:'This is RECOVERY. Gentle pedaling to get blood flowing. Keep it easy.'},
+          {section:'Hip Hinge & Mobility'},
+          {id:'cat_cow',reps:'10 slow breaths',note:'Spine mobility.'},
+          {id:'hip_circle',reps:'10 each direction',note:'Big circles. Open the joint.'},
+          {id:'glute_bridge',sets:2,reps:'15',note:'Light glute activation. Hip hinges like this keep the hip joint healthy.'},
+          {section:'Full Stretch'},
+          {id:'pigeon',hold:'60s each side',note:'Extra long hold. Sink deep into it. If you have a massage gun, hit the piriformis and glute med for 2 min per side before stretching.'},
+          {id:'figure4',hold:'60s each side',note:'Deep stretch. Breathe and relax.'},
+          {id:'hip_flexor',hold:'60s each side',note:'Your hip flexors get tight from sitting. Open them up.'},
+          {id:'piriformis_str',hold:'60s each side',note:'The seated version. Do this at your desk during the day too.'},
+          {id:'quad_str',hold:'30s each',note:'Quads.'},
+          {id:'ham_str',hold:'30s each',note:'Hamstrings. Hinge from hips.'},
+          {id:'cat_cow',reps:'8 breaths',note:'Finish with spine flow. Ahhhh.'}
         ]}
     }
   },
-  {id:2,name:'Kindle',tag:'Build the Flame',weeks:4,cardioDays:2,toneDays:1,mode:'foundation',
+  {id:2,name:'Kindle',tag:'Build the Flame',weeks:4,cardioDays:3,toneDays:3,mode:'foundation',
     desc:'You have the habit now. Time to add a little more intensity. Cardio gets longer, intervals get a bit harder, and toning starts to challenge you. Hip rehab moves to warmup only \u2014 your hips are getting stronger.',
     prog:'Cardio increases to 20 min. Stair stepper intervals get harder. Treadmill incline is introduced (always intervals \u2014 never sustained max incline). Toning adds core work.',
     schedule:[
-      {type:'cardio',wk:'p2_cardio1'},{type:'rest'},{type:'tone',wk:'p2_tone'},{type:'rest'},
-      {type:'cardio',wk:'p2_cardio2'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p2_cardio1'},{type:'tone',wk:'p2_tone'},{type:'cardio',wk:'p2_cardio2'},
+      {type:'tone',wk:'p2_tone2'},{type:'cardio',wk:'p2_cardio3'},{type:'tone',wk:'p2_stretch'},{type:'rest'}
     ],
     workouts:{
       p2_cardio1:{name:'Stair Stepper Power',focus:'Longer Intervals',dur:'35 min',
@@ -199,8 +244,8 @@ const PHASES = [
           {section:'Hip Warm-Up'},
           {id:'clamshell',sets:1,reps:'12 each side',note:'Quick activation.'},
           {section:'Cardio'},
-          {id:'tread_inc',duration:'15 min',protocol:'3.0 mph: 2 min at 6% incline / 2 min at 2%, alternate',note:'ALWAYS interval the incline. Never hold max incline. This prevents shin pain.'},
-          {id:'elliptical',duration:'10 min',protocol:'Moderate, mix forward/backward',note:'Easy finish to the cardio.'},
+          {id:'tread_inc',duration:'30 min',protocol:'3.0 mph: 2 min at 6% incline / 2 min at 2%, alternate',note:'ALWAYS interval the incline. Never hold max incline. This prevents shin pain.'},
+          {id:'elliptical',duration:'20 min',protocol:'Moderate, mix forward/backward',note:'Easy finish to the cardio.'},
           {section:'Extended Stretch'},
           {id:'pigeon',hold:'45s each side',note:'Longer hold. Sink in.'},
           {id:'figure4',hold:'45s each side',note:'Deep hip stretch.'},
@@ -208,15 +253,55 @@ const PHASES = [
           {id:'ham_str',hold:'30s each side',note:'Hamstrings.'},
           {id:'quad_str',hold:'30s each side',note:'Quads.'},
           {id:'cat_cow',reps:'10 breaths',note:'Finish with gentle spine work.'}
+        ]},
+      p2_tone2:{name:'Core & Arms',focus:'Upper Body Tone + Core Stability',dur:'35 min',
+        exercises:[
+          {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
+          {section:'Upper Body'},
+          {id:'db_shoulder',sets:3,reps:'12',note:'Controlled press.'},
+          {id:'db_row',sets:3,reps:'12 each',note:'Pull to hip.'},
+          {id:'pushup',sets:3,reps:'10-12',note:'Challenge: try a few from toes.'},
+          {id:'db_curl',sets:3,reps:'12',note:'Slow negatives.'},
+          {id:'tri_kick',sets:3,reps:'12 each',note:'Squeeze at the back.'},
+          {section:'Core'},
+          {id:'plank',sets:3,reps:'45s',note:'Hold strong.'},
+          {id:'bike_crunch',sets:3,reps:'12 each',note:'Slow. Don\'t yank neck.'},
+          {id:'dead_bug',sets:3,reps:'10 each',note:'Press lower back to floor.'},
+          {section:'Cool Down'},{id:'cat_cow',reps:'8 breaths',note:'Massage gun on shoulders/traps after if you have one.'}
+        ]},
+      p2_cardio3:{name:'Elliptical + Rower',focus:'Full Body Cardio',dur:'40 min',
+        exercises:[
+          {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
+          {section:'Cardio'},
+          {id:'elliptical',duration:'25 min',protocol:'Moderate resistance, alternate forward 3 min / backward 3 min',note:'Backward pedaling targets your glutes more. Mix it up.'},
+          {id:'rower',duration:'20 min',protocol:'1 min moderate / 30s hard, repeat',note:'Drive with LEGS first. Arms come last. Amazing full-body workout.'},
+          {section:'Cool Down'},
+          {id:'pigeon',hold:'30s each',note:'Hips.'},
+          {id:'hip_flexor',hold:'30s each',note:'Open up.'}
+        ]},
+      p2_stretch:{name:'Recovery & Mobility',focus:'Stretch, Massage Gun & Hip Care',dur:'35 min',
+        exercises:[
+          {section:'Light Cardio'},
+          {id:'bike',duration:'20 min',protocol:'Easy pace, minimal resistance',note:'Recovery day. Gentle.'},
+          {section:'Mobility'},
+          {id:'cat_cow',reps:'10 breaths',note:'Spine flow.'},
+          {id:'glute_bridge',sets:2,reps:'15',note:'Light hip hinge activation.'},
+          {section:'Full Stretch'},
+          {id:'pigeon',hold:'60s each',note:'Massage gun on piriformis 2 min/side before this stretch.'},
+          {id:'figure4',hold:'60s each',note:'Deep hip stretch.'},
+          {id:'hip_flexor',hold:'60s each',note:'Open up. Sit less tomorrow if you can.'},
+          {id:'ham_str',hold:'30s each',note:'Hinge from hips.'},
+          {id:'quad_str',hold:'30s each',note:'Quads.'},
+          {id:'cat_cow',reps:'8 breaths',note:'Finish with spine flow.'}
         ]}
     }
   },
-  {id:3,name:'Ignite',tag:'4 Days Strong',weeks:4,cardioDays:2,toneDays:2,mode:'foundation',
-    desc:'Welcome to 4 days a week! You\'re adding an extra training day. Cardio is getting longer and more challenging. Toning splits into upper and lower focus days. You\'re building real momentum.',
+  {id:3,name:'Ignite',tag:'6 Days Strong',weeks:4,cardioDays:3,toneDays:3,mode:'foundation',
+    desc:'Six days a week is your rhythm now. Cardio and toning alternate beautifully. Cardio is getting longer and more challenging. Toning splits into upper and lower focus days. You\'re building real momentum.',
     prog:'Cardio: 25 min stair stepper, 18 min incline treadmill. Toning: split upper/lower for more focus per session. Core in every toning session.',
     schedule:[
-      {type:'cardio',wk:'p3_cardio1'},{type:'tone',wk:'p3_upper'},{type:'rest'},
-      {type:'cardio',wk:'p3_cardio2'},{type:'tone',wk:'p3_lower'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p3_cardio1'},{type:'tone',wk:'p3_upper'},{type:'cardio',wk:'p3_cardio2'},
+      {type:'tone',wk:'p3_lower'},{type:'cardio',wk:'p3_cardio3'},{type:'tone',wk:'p3_stretch'},{type:'rest'}
     ],
     workouts:{
       p3_cardio1:{name:'Stair Stepper Challenge',focus:'25 Min Intervals',dur:'40 min',
@@ -250,8 +335,8 @@ const PHASES = [
         exercises:[
           {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
           {section:'Cardio'},
-          {id:'tread_inc',duration:'18 min',protocol:'3.2 mph: 2 min at 8% / 2 min at 3%, alternate',note:'Steeper incline now. Always interval it. Your shins are stronger.'},
-          {id:'bike',duration:'10 min',protocol:'Moderate resistance intervals',note:'Low impact finish.'},
+          {id:'tread_inc',duration:'30 min',protocol:'3.2 mph: 2 min at 8% / 2 min at 3%, alternate',note:'Steeper incline now. Always interval it. Your shins are stronger.'},
+          {id:'bike',duration:'20 min',protocol:'Moderate resistance intervals',note:'Low impact finish.'},
           {section:'Cool Down'},
           {id:'pigeon',hold:'30s each',note:'Hip care.'},
           {id:'ham_str',hold:'30s each',note:'Hamstrings.'},
@@ -273,26 +358,51 @@ const PHASES = [
           {id:'quad_str',hold:'30s each',note:'Quads.'},
           {id:'ham_str',hold:'30s each',note:'Hamstrings.'},
           {id:'cat_cow',reps:'10 breaths',note:'Spine flow.'}
+        ]},
+      p3_cardio3:{name:'Rower + Bike',focus:'Full Body + Low Impact',dur:'40 min',
+        exercises:[
+          {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
+          {section:'Cardio'},
+          {id:'rower',duration:'20 min',protocol:'1 min moderate / 30s hard, repeat',note:'Full body. Drive with legs first.'},
+          {id:'bike',duration:'20 min',protocol:'Alternate moderate/hard every 2 min',note:'Low impact. Great for hip-friendly cardio.'},
+          {section:'Cool Down'},
+          {id:'pigeon',hold:'30s each',note:'Hips.'},
+          {id:'hip_flexor',hold:'30s each',note:'Open.'}
+        ]},
+      p3_stretch:{name:'Recovery & Mobility',focus:'Deep Stretch & Hip Care',dur:'35 min',
+        exercises:[
+          {section:'Light Cardio'},
+          {id:'elliptical',duration:'20 min',protocol:'Easy pace, low resistance',note:'Recovery pace. This is a feel-good session.'},
+          {section:'Hip Hinge Work'},
+          {id:'glute_bridge',sets:2,reps:'15',note:'Hip hinge activation. Squeeze at top.'},
+          {id:'cat_cow',reps:'10 breaths',note:'Spine mobility.'},
+          {section:'Full Stretch'},
+          {id:'pigeon',hold:'60s each',note:'Use massage gun on piriformis + glute med 2 min/side before stretching.'},
+          {id:'figure4',hold:'60s each',note:'Deep stretch. Breathe.'},
+          {id:'hip_flexor',hold:'60s each',note:'Counter all the sitting.'},
+          {id:'piriformis_str',hold:'45s each',note:'Seated version. Do daily.'},
+          {id:'ham_str',hold:'30s each',note:'Hinge from hips.'},
+          {id:'quad_str',hold:'30s each',note:'Quads.'}
         ]}
     }
   },
 
   // ========== BLOCK 2: BUILD (Wks 13-24) ==========
-  {id:4,name:'Energize',tag:'Cardio Circuits',weeks:4,cardioDays:2,toneDays:2,mode:'build',
+  {id:4,name:'Energize',tag:'Cardio Circuits',weeks:4,cardioDays:3,toneDays:3,mode:'build',
     desc:'New element: cardio circuits! Rotate between machines every 10 minutes to keep it fresh and prevent adaptation. HIIT treadmill is introduced. Your body is changing.',
     prog:'Cardio circuit: 10 min per machine, 3 machines. HIIT treadmill: 30s fast / 60s easy. Toning maintains with higher reps.',
     schedule:[
-      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'rest'},
-      {type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_recovery'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p4_hiit'},
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p2_cardio3'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],
     workouts:{
       p4_circuit:{name:'Cardio Circuit',focus:'Machine Rotation',dur:'40 min',
         exercises:[
           {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Quick glute activation.'},
           {section:'Cardio Circuit'},
-          {id:'stair_int',duration:'10 min',protocol:'2 min moderate / 1 min fast',note:'First machine. Push the intervals.'},
-          {id:'elliptical',duration:'10 min',protocol:'Moderate resistance, alternate forward/backward',note:'Switch machines! Different muscles, fresh energy.'},
-          {id:'bike',duration:'10 min',protocol:'Resistance intervals: 1 min hard / 1 min easy',note:'Third machine. Finish strong.'},
+          {id:'stair_int',duration:'20 min',protocol:'2 min moderate / 1 min fast',note:'First machine. Push the intervals.'},
+          {id:'elliptical',duration:'20 min',protocol:'Moderate resistance, alternate forward/backward',note:'Switch machines! Different muscles, fresh energy.'},
+          {id:'bike',duration:'20 min',protocol:'Resistance intervals: 1 min hard / 1 min easy',note:'Third machine. Finish strong.'},
           {section:'Core'},
           {id:'plank',sets:3,reps:'45s',note:'Getting stronger every week.'},
           {id:'dead_bug',sets:3,reps:'12 each',note:'Core stability.'},
@@ -318,7 +428,7 @@ const PHASES = [
           {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Quick activation.'},
           {section:'Cardio'},
           {id:'tread_hiit',duration:'20 min',protocol:'30s fast (3.8-4.0 mph) / 60s easy (2.5 mph), repeat',note:'HIIT walking. The fast intervals should challenge you. This burns more than steady walking.'},
-          {id:'stair_steady',duration:'10 min',protocol:'Moderate steady pace',note:'Steady state to finish.'},
+          {id:'stair_steady',duration:'20 min',protocol:'Moderate steady pace',note:'Steady state to finish.'},
           {section:'Cool Down'},
           {id:'pigeon',hold:'30s each',note:'Hip care.'},
           {id:'ham_str',hold:'30s each',note:'Hamstrings.'},
@@ -327,7 +437,7 @@ const PHASES = [
       p4_recovery:{name:'Active Recovery',focus:'Gentle Movement & Stretch',dur:'30 min',
         exercises:[
           {section:'Easy Cardio'},
-          {id:'bike',duration:'15 min',protocol:'Easy pace, very light resistance',note:'This is recovery. Keep it gentle and feel-good.'},
+          {id:'bike',duration:'30 min',protocol:'Easy pace, very light resistance',note:'This is recovery. Keep it gentle and feel-good.'},
           {section:'Full Stretch'},
           {id:'pigeon',hold:'60s each',note:'Extra long hold. Sink deep.'},
           {id:'figure4',hold:'60s each',note:'Deep piriformis relief.'},
@@ -338,82 +448,82 @@ const PHASES = [
         ]}
     }
   },
-  {id:5,name:'Rise',tag:'Turning Up the Heat',weeks:4,cardioDays:2,toneDays:2,mode:'build',
+  {id:5,name:'Rise',tag:'Turning Up the Heat',weeks:4,cardioDays:3,toneDays:3,mode:'build',
     desc:'Cardio gets longer and more intense. HIIT intervals get harder. You are visibly different than when you started. Keep going \u2014 the transformation is happening.',
     prog:'Stair stepper: 25 min. HIIT treadmill: harder intervals. Toning: slightly heavier weights.',
     schedule:[
-      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'rest'},
-      {type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_recovery'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p4_hiit'},
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p2_cardio3'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],workouts:{}
   },
-  {id:6,name:'Empower',tag:'Own Your Strength',weeks:4,cardioDays:2,toneDays:2,mode:'build',
+  {id:6,name:'Empower',tag:'Own Your Strength',weeks:4,cardioDays:3,toneDays:3,mode:'build',
     desc:'Peak of the 4-day block. Longest cardio sessions yet. You feel powerful. You\'re not just working out \u2014 you\'re choosing yourself every single day.',
     prog:'Cardio sessions hit 35 min. HIIT gets more rounds. Toning is maintenance \u2014 you\'re already strong.',
     schedule:[
-      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'rest'},
-      {type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_recovery'},{type:'rest'},{type:'rest'}
+      {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p4_hiit'},
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p2_cardio3'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],workouts:{}
   },
 
   // ========== BLOCK 3: TRANSFORM (Wks 25-36) ==========
-  {id:7,name:'Transform',tag:'5 Days',weeks:4,cardioDays:3,toneDays:2,mode:'transform',
-    desc:'Five days a week! You\'re adding a third cardio day. Rowing machine enters the mix. You have more energy, more confidence, and more strength than you\'ve had in years.',
+  {id:7,name:'Transform',tag:'5 Days',weeks:4,cardioDays:3,toneDays:3,mode:'transform',
+    desc:'Six days a week! Three cardio days, three toning days. Rowing machine enters the mix. You have more energy, more confidence, and more strength than you\'ve had in years.',
     prog:'Third cardio day: rower + elliptical combo. Other sessions maintain intensity. You\'re in a groove.',
     schedule:[
       {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p7_rower'},
-      {type:'rest'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p3_lower'},{type:'rest'}
+      {type:'tone',wk:'p3_upper'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p3_lower'},{type:'rest'}
     ],
     workouts:{
       p7_rower:{name:'Row + Elliptical',focus:'Full Body Cardio',dur:'35 min',
         exercises:[
           {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
           {section:'Cardio'},
-          {id:'rower',duration:'15 min',protocol:'30s hard / 30s easy, repeat',note:'Rowing is full body. Drive with legs first, then pull. Amazing full-body workout.'},
-          {id:'elliptical',duration:'15 min',protocol:'Moderate, alternate forward/backward every 3 min',note:'Low impact finish.'},
+          {id:'rower',duration:'30 min',protocol:'30s hard / 30s easy, repeat',note:'Rowing is full body. Drive with legs first, then pull. Amazing full-body workout.'},
+          {id:'elliptical',duration:'30 min',protocol:'Moderate, alternate forward/backward every 3 min',note:'Low impact finish.'},
           {section:'Cool Down'},{id:'pigeon',hold:'30s each',note:'Hips.'},{id:'ham_str',hold:'30s each',note:'Hamstrings.'}
         ]}
     }
   },
-  {id:8,name:'Elevate',tag:'Push Higher',weeks:4,cardioDays:3,toneDays:2,mode:'transform',
+  {id:8,name:'Elevate',tag:'Push Higher',weeks:4,cardioDays:3,toneDays:3,mode:'transform',
     desc:'Higher intensity across all sessions. Every workout leaves you feeling accomplished. You are not the same person who started this journey.',
     prog:'Longer intervals, more challenging circuits. Toning maintains your muscle while cardio sheds the rest.',
     schedule:[
       {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p7_rower'},
-      {type:'rest'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p3_lower'},{type:'rest'}
+      {type:'tone',wk:'p3_upper'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p3_lower'},{type:'rest'}
     ],workouts:{}
   },
-  {id:9,name:'Shine',tag:'Let It Show',weeks:4,cardioDays:3,toneDays:2,mode:'transform',
+  {id:9,name:'Shine',tag:'Let It Show',weeks:4,cardioDays:3,toneDays:3,mode:'transform',
     desc:'Peak variety. Every session is different. You look forward to your workouts because they make you feel incredible. The changes in the mirror are undeniable.',
     prog:'Mix everything: circuits, HIIT, rowing, incline, steady state. Your body adapts to nothing because we change everything.',
     schedule:[
       {type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p7_rower'},
-      {type:'rest'},{type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p3_lower'},{type:'rest'}
+      {type:'tone',wk:'p3_upper'},{type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],workouts:{}
   },
 
   // ========== BLOCK 4: RADIATE (Wks 37-48) ==========
-  {id:10,name:'Glow',tag:'You\'re Glowing',weeks:4,cardioDays:3,toneDays:2,mode:'radiate',
+  {id:10,name:'Glow',tag:'You\'re Glowing',weeks:4,cardioDays:3,toneDays:3,mode:'radiate',
     desc:'People are noticing. Your energy is different. Your confidence is different. 5 days a week is your new normal. Keep shining.',
     prog:'Maintain peak fitness. Vary the cardio. Enjoy how strong and capable you feel.',
     schedule:[
       {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p7_rower'},
-      {type:'rest'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],workouts:{}
   },
-  {id:11,name:'Flourish',tag:'Thriving',weeks:4,cardioDays:3,toneDays:2,mode:'radiate',
+  {id:11,name:'Flourish',tag:'Thriving',weeks:4,cardioDays:3,toneDays:3,mode:'radiate',
     desc:'You are thriving. Not just surviving \u2014 flourishing. Your body is strong, your mind is clear, your energy is boundless. This is who you are now.',
     prog:'Maintain everything. Challenge yourself with harder intervals when it feels right. You know your body.',
     schedule:[
       {type:'cardio',wk:'p4_hiit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p4_circuit'},
-      {type:'rest'},{type:'cardio',wk:'p7_rower'},{type:'tone',wk:'p3_lower'},{type:'rest'}
+      {type:'tone',wk:'p3_upper'},{type:'cardio',wk:'p7_rower'},{type:'tone',wk:'p3_lower'},{type:'rest'}
     ],workouts:{}
   },
-  {id:12,name:'Radiance',tag:'This Is You',weeks:4,cardioDays:3,toneDays:2,mode:'radiate',
+  {id:12,name:'Radiance',tag:'This Is You',weeks:4,cardioDays:3,toneDays:3,mode:'radiate',
     desc:'The final phase, but not the end. This is your new life. You\'ve built something that will last forever. You are radiant. You are powerful. You are proof that showing up changes everything.',
     prog:'You own this. Maintain, enjoy, and transition to a sustainable lifetime routine. You never have to go back.',
     schedule:[
       {type:'cardio',wk:'p4_circuit'},{type:'tone',wk:'p4_tone'},{type:'cardio',wk:'p4_hiit'},
-      {type:'rest'},{type:'cardio',wk:'p7_rower'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
+      {type:'tone',wk:'p1_tone2'},{type:'cardio',wk:'p7_rower'},{type:'tone',wk:'p4_recovery'},{type:'rest'}
     ],workouts:{}
   }
 ];
