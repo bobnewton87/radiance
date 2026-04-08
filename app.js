@@ -3,7 +3,7 @@
 // Evidence-based: GLP-1 aware, periodized cardio + strength
 // hip rehab protocol, progressive 3->4->5 day schedule
 // ============================================================
-const APP_VERSION = 3;
+const APP_VERSION = 4;
 
 const EX = {
   stair_int:{name:'Stair Stepper Intervals',cat:'cardio',yt:'https://www.youtube.com/results?search_query=female+stair+stepper+interval+workout',form:['Stand tall, light grip on rails','Increase speed for work intervals, drop for rest','Breathe rhythmically','Full steps, press through whole foot']},
@@ -45,10 +45,10 @@ const EX = {
 
 // ---- PHASES: 3 days wk1-8, 4 days wk9-36, 4 days wk37-48 ----
 const PHASES = [
-  {id:1,name:'Spark',tag:'Your beautiful beginning',weeks:4,cardioDays:1,toneDays:2,
-    desc:'Three days a week. That\'s all. One cardio session to find your rhythm. Two strength sessions to keep your muscles strong and toned while your body transforms. Hip care woven into every session.',
+  {id:1,name:'Spark',tag:'Your beautiful beginning',weeks:4,cardioDays:2,toneDays:2,
+    desc:'Four days a week. Two cardio days and two strength days to find your rhythm. Two strength sessions to keep your muscles strong and toned while your body transforms. Hip care woven into every session.',
     prog:'Cardio: 25 min steady state. Strength: light weight, 3x10-12, RPE 6 (comfortable). Hip rehab: full protocol every session.',
-    schedule:[{type:'tone',wk:'s_full_a'},{type:'rest'},{type:'cardio',wk:'s_cardio'},{type:'rest'},{type:'tone',wk:'s_full_b'},{type:'rest'},{type:'rest'}],
+    schedule:[{type:'cardio',wk:'s_cardio'},{type:'tone',wk:'s_full_a'},{type:'rest'},{type:'cardio',wk:'s_cardio2'},{type:'tone',wk:'s_full_b'},{type:'rest'},{type:'rest'}],
     workouts:{
       s_full_a:{name:'Strength + Hip Care',focus:'Full Body \u00b7 Gym',dur:'40 min',exercises:[
         {section:'Hip Activation'},{id:'hip_circle',reps:'10 each direction',note:'Slow circles. Wake up those hips.'},{id:'clamshell',sets:2,reps:'15 each side',note:'THE exercise for your hip. Squeeze the side of your hip.'},{id:'band_walk',sets:2,reps:'10 each direction',note:'Burn on the side of the hip = glute med working.'},
@@ -65,13 +65,18 @@ const PHASES = [
         {section:'Strength'},{id:'trap_dl',sets:3,reps:'10',note:'Light. Hip hinge \u2014 the most functional movement. Flat back.'},{id:'db_lunge',sets:3,reps:'10 each',note:'Reverse lunges. Bodyweight fine to start.'},{id:'sl_bridge',sets:3,reps:'10 each',note:'Hip stability builder. Both legs if needed.'},{id:'pushup',sets:3,reps:'8-10',note:'Modified is perfect. No shame ever.'},{id:'db_curl',sets:2,reps:'12',note:'Light. Full range.'},{id:'tri_kick',sets:2,reps:'12 each',note:'Back of arm toning.'},
         {section:'Core'},{id:'plank',sets:3,reps:'30 seconds',note:'Hold strong. Knees OK.'},{id:'dead_bug',sets:3,reps:'10 each',note:'Press lower back to floor.'},
         {section:'Cool Down'},{id:'pigeon',hold:'30s each',note:'Hip opener.'},{id:'cat_cow',reps:'8 breaths',note:'Spine release.'}
+      ]},
+      s_cardio2:{name:'Cardio Variety',focus:'Two Machines',dur:'35 min',exercises:[
+        {section:'Hip Warm-Up'},{id:'clamshell',sets:1,reps:'12 each',note:'Activate.'},
+        {section:'Cardio'},{id:'elliptical',duration:'20 min',protocol:'Moderate, alternate forward/backward every 5 min',note:'Forward = quads, backward = glutes. Low impact.'},{id:'bike',duration:'15 min',protocol:'Easy to moderate, change resistance every 3 min',note:'Finish on the bike. Easy on joints.'},
+        {section:'Cool Down'},{id:'pigeon',hold:'30s each',note:'Hips.'},{id:'hip_flexor',hold:'30s each',note:'Open up.'},{id:'cat_cow',reps:'8 breaths',note:'Spine.'}
       ]}
     }
   },
-  {id:2,name:'Kindle',tag:'Fanning the flame',weeks:4,cardioDays:1,toneDays:2,
-    desc:'Same 3 days, more confidence. Cardio is a bit longer. Strength feels easier \u2014 that means you\'re getting stronger. Hip exercises move to warm-up only \u2014 your hips are responding!',
+  {id:2,name:'Kindle',tag:'Fanning the flame',weeks:4,cardioDays:2,toneDays:2,
+    desc:'Four days. Cardio variety increases. Strength feels easier \u2014 that means you\'re getting stronger. Hip exercises move to warm-up only \u2014 your hips are responding!',
     prog:'Cardio: 30 min. Strength: slightly more reps or weight. Hip: warm-up activation only.',
-    schedule:[{type:'tone',wk:'k_full_a'},{type:'rest'},{type:'cardio',wk:'k_cardio'},{type:'rest'},{type:'tone',wk:'k_full_b'},{type:'rest'},{type:'rest'}],
+    schedule:[{type:'cardio',wk:'k_cardio'},{type:'tone',wk:'k_full_a'},{type:'rest'},{type:'cardio',wk:'k_cardio2'},{type:'tone',wk:'k_full_b'},{type:'rest'},{type:'rest'}],
     workouts:{
       k_full_a:{name:'Strength',focus:'Full Body \u00b7 Gym',dur:'40 min',exercises:[
         {section:'Hip Warm-Up'},{id:'clamshell',sets:1,reps:'12 each',note:'Activate.'},{id:'band_walk',sets:1,reps:'10 each',note:'Glute med.'},
@@ -89,6 +94,11 @@ const PHASES = [
         {section:'Strength'},{id:'trap_dl',sets:3,reps:'10',note:'Flat back, drive through feet.'},{id:'db_lunge',sets:3,reps:'10 each',note:'A bit heavier if ready.'},{id:'sl_bridge',sets:3,reps:'12 each',note:'Building hip stability.'},{id:'pushup',sets:3,reps:'10',note:'Try a few from toes if strong.'},{id:'db_curl',sets:2,reps:'12',note:'Arms.'},{id:'tri_kick',sets:2,reps:'12 each',note:'Back of arms.'},
         {section:'Core'},{id:'plank',sets:3,reps:'40s',note:'Longer!'},{id:'bike_crunch',sets:3,reps:'10 each',note:'Slow.'},
         {section:'Cool Down'},{id:'pigeon',hold:'30s each',note:'Hips.'},{id:'cat_cow',reps:'8 breaths',note:'Spine.'}
+      ]},
+      k_cardio2:{name:'Incline Walk + Stretch',focus:'Treadmill Intervals',dur:'40 min',exercises:[
+        {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
+        {section:'Cardio'},{id:'tread_inc',duration:'25 min',protocol:'3.0 mph: 2 min at 6% / 2 min at 2%, alternate',note:'ALWAYS interval the incline. This prevents shin pain.'},{id:'bike',duration:'10 min',protocol:'Easy cool down',note:'Easy finish.'},
+        {section:'Stretch'},{id:'pigeon',hold:'45s each',note:'Hips.'},{id:'figure4',hold:'45s each',note:'Deep stretch.'},{id:'hip_flexor',hold:'45s each',note:'Open up.'},{id:'ham_str',hold:'30s each',note:'Hamstrings.'}
       ]}
     }
   },
@@ -97,7 +107,7 @@ const PHASES = [
   {id:3,name:'Ignite',tag:'Adding a spark',weeks:4,cardioDays:2,toneDays:2,
     desc:'Four days a week! A second cardio day joins the party. Your hips feel better, your body is changing, and you have more energy. Let\'s use it beautifully.',
     prog:'Cardio: 30 min with 5 min of gentle intervals at the end. Strength: upper/lower split.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'i_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'i_cardio2'},{type:'rest'},{type:'rest'}],
+    schedule:[{type:'cardio',wk:'i_cardio1'},{type:'tone',wk:'i_upper'},{type:'rest'},{type:'cardio',wk:'i_cardio2'},{type:'tone',wk:'i_lower'},{type:'rest'},{type:'rest'}],
     workouts:{
       i_upper:{name:'Upper Body',focus:'Arms, Shoulders, Back, Core',dur:'40 min',exercises:[
         {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},{id:'cat_cow',reps:'8 breaths',note:'Spine.'},
@@ -122,10 +132,10 @@ const PHASES = [
       ]}
     }
   },
-  {id:4,name:'Energize',tag:'Feeling the change',weeks:4,cardioDays:2,toneDays:2,
+  {id:4,name:'Energize',tag:'Feeling the change',weeks:4,cardioDays:3,toneDays:2,
     desc:'Your body is different now. Clothes fit differently. You have energy you haven\'t felt in years. Cardio gets a few more minutes and slightly more intervals.',
     prog:'Cardio: 35 min with 8 min intervals. Introduce machine circuits.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'},{type:'rest'}],
+    schedule:[{type:'cardio',wk:'e_cardio1'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio2'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'rest'},{type:'rest'}],
     workouts:{
       e_cardio1:{name:'Cardio + Intervals',focus:'Stair Stepper or Incline',dur:'40 min',exercises:[
         {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
@@ -140,10 +150,10 @@ const PHASES = [
       ]}
     }
   },
-  {id:5,name:'Rise',tag:'Watch yourself rise',weeks:4,cardioDays:2,toneDays:2,
+  {id:5,name:'Rise',tag:'Watch yourself rise',weeks:4,cardioDays:3,toneDays:2,
     desc:'People are noticing. Comments are coming. The mirror tells a beautiful new story. Introduce rowing if you haven\'t tried it.',
     prog:'Cardio: 35-40 min. Rowing introduced. Strength: maintaining your tone.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'r_row'},{type:'rest'},{type:'rest'}],
+    schedule:[{type:'cardio',wk:'e_cardio1'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'r_row'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'}],
     workouts:{
       r_row:{name:'Row + Elliptical',focus:'Full Body Cardio',dur:'40 min',exercises:[
         {section:'Warm-Up'},{id:'clamshell',sets:1,reps:'10 each',note:'Activate.'},
@@ -152,44 +162,44 @@ const PHASES = [
       ]}
     }
   },
-  {id:6,name:'Empower',tag:'Own your strength',weeks:4,cardioDays:2,toneDays:2,
+  {id:6,name:'Empower',tag:'Own your strength',weeks:4,cardioDays:3,toneDays:2,
     desc:'Peak of the 4-day phase. You are strong, confident, and moving through the world differently. This is empowerment.',
     prog:'Cardio: 40 min. Intervals: 10-12 min. You are powerful.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'},{type:'rest'}],workouts:{}
+    schedule:[{type:'cardio',wk:'e_cardio2'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_lower'},{type:'rest'}],workouts:{}
   },
 
   // ========== BLOCK 3: TRANSFORM (Wks 25-36) — 4-5 days ==========
-  {id:7,name:'Transform',tag:'Becoming',weeks:4,cardioDays:2,toneDays:2,
+  {id:7,name:'Transform',tag:'Becoming',weeks:4,cardioDays:4,toneDays:1,
     desc:'Optional 5th day appears \u2014 a light cardio + stretch session whenever you feel like it. No pressure, no guilt. You\'re in the groove.',
-    prog:'4 core days + optional easy 5th (walk/bike + stretch). Cardio: 40 min.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'r_row'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'5 days now — 4 cardio + 1 tone (walk/bike + stretch). Cardio: 40 min.',
+    schedule:[{type:'cardio',wk:'e_cardio1'},{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_upper'},{type:'rest'},{type:'cardio',wk:'e_cardio2'},{type:'cardio',wk:'s_cardio2'},{type:'rest'}],workouts:{}
   },
-  {id:8,name:'Elevate',tag:'Rising higher',weeks:4,cardioDays:2,toneDays:2,
+  {id:8,name:'Elevate',tag:'Rising higher',weeks:4,cardioDays:4,toneDays:1,
     desc:'You don\'t recognize old photos. The woman in the mirror is strong, energized, and radiant. Keep going.',
-    prog:'Cardio: 40-45 min. Slightly harder intervals. You can handle it.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'5 days: 4 cardio + 1 tone. Peak cardio volume. 40-45 min sessions.',
+    schedule:[{type:'cardio',wk:'e_cardio2'},{type:'cardio',wk:'s_cardio'},{type:'tone',wk:'i_lower'},{type:'rest'},{type:'cardio',wk:'r_row'},{type:'cardio',wk:'e_cardio1'},{type:'rest'}],workouts:{}
   },
-  {id:9,name:'Shine',tag:'Let the world see',weeks:4,cardioDays:2,toneDays:2,
+  {id:9,name:'Shine',tag:'Let the world see',weeks:4,cardioDays:4,toneDays:1,
     desc:'You shine. Not because of any number \u2014 because YOU are different. Stronger. More alive.',
-    prog:'Peak variety. Mix every machine. Your body adapts to nothing because we change everything.',
-    schedule:[{type:'cardio',wk:'e_cardio2'},{type:'tone',wk:'i_upper'},{type:'rest'},{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_lower'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'5 days: 4 cardio, 1 tone. Peak variety. Your body adapts to nothing because we change everything.',
+    schedule:[{type:'cardio',wk:'r_row'},{type:'cardio',wk:'e_cardio1'},{type:'tone',wk:'i_upper'},{type:'rest'},{type:'cardio',wk:'e_cardio2'},{type:'cardio',wk:'s_cardio2'},{type:'rest'}],workouts:{}
   },
 
   // ========== BLOCK 4: SUSTAIN (Wks 37-48) — 4 days ==========
-  {id:10,name:'Glow',tag:'You\'re glowing',weeks:4,cardioDays:2,toneDays:2,
+  {id:10,name:'Glow',tag:'You\'re glowing',weeks:4,cardioDays:4,toneDays:2,
     desc:'People ask what you\'re doing. The answer: you showed up, 3 or 4 days a week, for months. That\'s the secret.',
-    prog:'Sustainable rhythm. 4 days. This is your forever routine.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'6 days now. 4 cardio + 2 tone. You are a machine.',
+    schedule:[{type:'cardio',wk:'e_cardio1'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'r_row'},{type:'cardio',wk:'e_cardio2'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'s_cardio2'},{type:'rest'}],workouts:{}
   },
-  {id:11,name:'Flourish',tag:'Thriving beautifully',weeks:4,cardioDays:2,toneDays:2,
+  {id:11,name:'Flourish',tag:'Thriving beautifully',weeks:4,cardioDays:4,toneDays:2,
     desc:'You are flourishing. Not just surviving \u2014 thriving. Your body is strong. Your mind is clear. This is who you\'ve always been.',
-    prog:'Maintain. Challenge yourself when it feels right. You know your body.',
-    schedule:[{type:'cardio',wk:'e_cardio2'},{type:'tone',wk:'i_upper'},{type:'rest'},{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_lower'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'6 days. This is peak you. Cardio you love, strength that keeps you toned.',
+    schedule:[{type:'cardio',wk:'e_cardio2'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'s_cardio'},{type:'rest'}],workouts:{}
   },
-  {id:12,name:'Radiance',tag:'This is you',weeks:4,cardioDays:2,toneDays:2,
+  {id:12,name:'Radiance',tag:'This is you',weeks:4,cardioDays:4,toneDays:2,
     desc:'This isn\'t an ending \u2014 it\'s a beginning. You\'ve built habits that will last forever. You are radiant. You are powerful. You are proof that showing up changes everything.',
-    prog:'Your sustainable template for life. 4 days. Cardio you enjoy. Strength that keeps you toned. You never have to go back.',
-    schedule:[{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'rest'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'r_row'},{type:'rest'},{type:'rest'}],workouts:{}
+    prog:'6 glorious days. Your sustainable peak. Cardio you enjoy. Strength that keeps you toned. You never have to go back.',
+    schedule:[{type:'cardio',wk:'r_row'},{type:'tone',wk:'i_upper'},{type:'cardio',wk:'e_cardio1'},{type:'cardio',wk:'s_cardio2'},{type:'tone',wk:'i_lower'},{type:'cardio',wk:'e_cardio2'},{type:'rest'}],workouts:{}
   }
 ];
 (function(){ var w=1; PHASES.forEach(function(p){ p.startWeek=w; w+=p.weeks; }); })();
