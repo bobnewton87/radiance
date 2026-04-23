@@ -1,4 +1,4 @@
-const CACHE_NAME = 'radiance-v1';
+const CACHE_NAME = 'radiance-v2';
 const ASSETS = [
   './',
   './index.html',
