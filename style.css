@@ -400,3 +400,47 @@ input:focus { outline:none; border-color:var(--primary); }
 
 /* Hip routine quick-access card */
 .hip-access { background:var(--tone-bg); border-color:var(--tone); }
+
+/* Crunch class list (lives inside cardio block) */
+.crunch-classes { margin:10px 0; padding:12px; background:#fef5f0;
+  border:1px solid var(--primary); border-radius:var(--rs); }
+.crunch-classes-head { display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; font-weight:800; color:var(--primary); letter-spacing:.3px;
+  text-transform:uppercase; margin-bottom:10px; }
+.crunch-stale { font-size:9px; color:var(--muted); font-weight:600;
+  letter-spacing:.2px; text-transform:none; }
+.crunch-class-pill { display:block; width:100%; text-align:left;
+  padding:10px 12px; margin-bottom:6px; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--rs); cursor:pointer;
+  transition:all .2s; }
+.crunch-class-pill:last-of-type { margin-bottom:0; }
+.crunch-class-pill:active { transform:scale(.985); }
+.crunch-class-pill.match { border-color:var(--primary); }
+.crunch-class-pill.selected { background:var(--primary); border-color:var(--primary); }
+.crunch-class-pill.selected .cc-name,
+.crunch-class-pill.selected .cc-time,
+.crunch-class-pill.selected .cc-dur,
+.crunch-class-pill.selected .cc-instr,
+.crunch-class-pill.selected .cc-sep { color:#fff; }
+.crunch-class-pill.selected .cc-match { background:#fff; color:var(--primary); }
+.cc-row1 { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+.cc-name { font-size:14px; font-weight:700; color:var(--text); }
+.cc-match { font-size:10px; font-weight:700; color:var(--primary);
+  background:var(--primary-light); padding:2px 8px; border-radius:10px;
+  letter-spacing:.3px; }
+.cc-row2 { display:flex; gap:6px; font-size:11px; color:var(--muted); }
+.cc-time { font-weight:700; color:var(--primary); }
+.crunch-class-pill.selected .cc-time { color:#fff; font-weight:700; }
+.cc-sep { color:var(--dim); }
+.crunch-or { text-align:center; font-size:10px; color:var(--muted);
+  letter-spacing:1px; text-transform:uppercase; padding:8px 0 2px;
+  font-style:italic; }
+
+/* Inline YouTube link on each exercise row (no modal required) */
+.ex-yt-inline { display:inline-flex; align-items:center; gap:3px;
+  font-size:11px; font-weight:700; color:var(--cardio);
+  background:var(--cardio-bg); padding:3px 8px; border-radius:12px;
+  text-decoration:none; margin-left:8px; white-space:nowrap; }
+.ex-yt-inline:active { opacity:.7; }
+.exercise-header-line { display:flex; align-items:center; flex-wrap:wrap;
+  gap:4px 0; margin-bottom:4px; }

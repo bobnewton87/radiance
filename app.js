@@ -14,26 +14,27 @@ const EX = {
   elliptical:{name:'Elliptical',cat:'cardio',primary:['Legs','Heart'],secondary:['Glutes','Arms'],equip:'Elliptical',yt:'https://www.youtube.com/results?search_query=female+elliptical+workout+beginner',form:['Stand tall, push and pull with arms','Try forward AND backward — backward hits glutes','Low impact, happy hips','Good for anyone feeling sore']},
 
   // --- HIP HOME PROTOCOL (from user\'s trainer) ---
-  sl_rdl:{name:'Single-Leg RDL',cat:'hip_home',primary:['Glutes','Hamstrings'],secondary:['Core','Balance'],equip:'Dumbbell',unit:'total',defaultBase:15,rest:45,
-    yt:'https://www.youtube.com/results?search_query=female+single+leg+romanian+deadlift+form',
+  sl_rdl:{name:'Single-Leg Hip Hinge',cat:'hip_home',primary:['Glutes','Hamstrings'],secondary:['Core','Balance'],equip:'Dumbbell',unit:'total',defaultBase:15,rest:45,
+    yt:'https://www.youtube.com/results?search_query=female+single+leg+hip+hinge+dumbbell',
     form:[
-      'Stand on one leg, slight bend in standing knee',
-      'Hold DB in opposite hand (or both hands light to start)',
-      'Hinge at the hip — extend free leg straight back as torso tips forward',
-      'Keep hips square (don\'t let the back hip rotate up)',
-      'Back leg, torso, and head form one straight line',
-      'Drive through standing heel to stand, squeeze glute at top',
-      'Switch legs every set — 8 each side'
+      'Stand on ONE leg — this is the working leg',
+      'Slight bend in the standing knee',
+      'Hold DB in the opposite hand (or both hands light to start)',
+      'Hinge at the hip — push hips BACK as torso tips forward',
+      'Free leg extends straight back behind you for balance',
+      'Keep hips level (don\'t let the back hip rotate up)',
+      'Drive through standing heel to stand tall, squeeze glute at top',
+      'Do both sides — 8 reps on each leg'
     ]},
-  warrior_raise:{name:'Warrior-III Balance Raise',cat:'hip_home',primary:['Glutes','Core','Shoulders'],secondary:['Hip Stabilizers'],equip:'Light DB(s)',unit:'each',defaultBase:3,rest:45,
-    yt:'https://www.youtube.com/results?search_query=female+warrior+3+front+raise+balance',
+  warrior_raise:{name:'Balancing Front Raise',cat:'hip_home',primary:['Glutes','Core','Shoulders'],secondary:['Hip Stabilizers','Balance'],equip:'Light DB(s)',unit:'each',defaultBase:3,rest:45,
+    yt:'https://www.youtube.com/results?search_query=female+single+leg+front+raise+balance+dumbbell',
     form:[
-      'Stand on one leg, very light DB(s) in hands',
-      'Simultaneously raise arms straight forward to shoulder height AND opposite leg straight back',
-      'End position: arms, torso, raised leg all parallel to floor',
-      'Hold 1–2 seconds at the top',
-      'Return with control',
-      '8 each leg — balance is the point, not speed'
+      'Stand on ONE leg — very light DB(s) in hands',
+      'Extend the other leg straight BEHIND you (toe can touch lightly or hover)',
+      'Raise both arms straight forward to shoulder height',
+      'Lower slowly with control',
+      'The balance on one leg IS the hip work — keep hips level',
+      'Do both sides — 8 reps on each leg'
     ]},
   seated_band_abd:{name:'Seated Band Abduction',cat:'hip_home',primary:['Glute Medius'],secondary:['Hip Stabilizers'],equip:'Mini band above knees',unit:'total',defaultBase:0,rest:30,
     yt:'https://www.youtube.com/results?search_query=female+seated+banded+hip+abduction+glute+medius',
@@ -456,16 +457,38 @@ var Plans = {
 
 // ---------- APP ----------
 var App = {
-  tab:'today', woff:0, ntab:'today',
+  tab:'today', woff:0, ntab:'today', crunchData:null,
   init:function(){
     var self=this;
     S.set('appver',APP_VERSION); // Don't wipe user data on upgrade; just update the marker.
     // Retroactively grant badges for completions logged before v6.
     var total=Object.keys(S.completed).length;
     COUNT_BADGES.forEach(function(b){ if(total>=b.n) S.grantBadge(b.id); });
+    // Load Crunch schedule (non-blocking). Re-renders when loaded.
+    this.loadCrunch();
     document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){self.tab=t.dataset.tab;self.woff=0;self.render();});});
     document.getElementById('menu-btn').addEventListener('click',function(){self.showPlansMenu();});
     this.render();
+  },
+  loadCrunch:function(){
+    var self=this;
+    fetch('./crunch-today.json?t='+Date.now(),{cache:'no-store'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(data){
+        if(!data||!Array.isArray(data.classes))return;
+        self.crunchData=data;
+        if(self.tab==='today')self.render();
+      })
+      .catch(function(){/* silent — fall back to machine picker */});
+  },
+  // Given a cardio pattern key, return tags that make a class a good match.
+  patternPreferredTags:function(pattern){
+    if(!pattern)return ['steady','intervals'];
+    if(pattern.indexOf('interval')===0||pattern.indexOf('intervals_')===0)return ['intervals','steady'];
+    if(pattern==='incline_intervals')return ['intervals','steady'];
+    if(pattern==='steady')return ['steady'];
+    if(pattern==='easy')return ['steady'];
+    return ['steady','intervals'];
   },
   render:function(){
     var self=this;
@@ -513,7 +536,42 @@ var App = {
     var dow=date.getDay(); // 0=Sun 6=Sat
     var hoursByDow=['7am – 7pm','5am – 11pm','5am – 11pm','5am – 11pm','5am – 11pm','5am – 10pm','7am – 7pm'];
     var todayHours=hoursByDow[dow];
-    return '<div class="card crunch-card"><div class="crunch-head"><span class="crunch-icon">🏋️‍♀️</span><div class="crunch-title">Crunch Allen</div></div><div class="crunch-sub">Today’s hours · '+todayHours+'</div><div class="crunch-sub">510 N Watters Rd · 469.824.3022</div><a href="https://www.crunch.com/locations/allen" target="_blank" class="crunch-link">See Today’s Classes →</a></div>';
+    return '<div class="card crunch-card"><div class="crunch-head"><span class="crunch-icon">🏋️‍♀️</span><div class="crunch-title">Crunch Allen</div></div><div class="crunch-sub">Today’s hours · '+todayHours+'</div><div class="crunch-sub">510 N Watters Rd · 469.824.3022</div><a href="https://www.crunch.com/locations/allen" target="_blank" class="crunch-link">Open on Crunch.com →</a></div>';
+  },
+
+  // Render a Crunch class list filtered to this block's cardio goal.
+  // Classes marked as selected show a checkmark; tapping a pill picks it
+  // as the cardio choice for this block.
+  rCrunchClasses:function(blockIdx,pattern,ses){
+    if(!this.crunchData||!this.crunchData.classes||!this.crunchData.classes.length)return '';
+    var dsToday=ds(norm(new Date()));
+    // If the scraped date is not today, show a gentle stale notice but still show classes.
+    var stale=this.crunchData.date&&this.crunchData.date!==dsToday;
+    var prefs=this.patternPreferredTags(pattern);
+    var chosenClass=ses.crunchClasses&&ses.crunchClasses[blockIdx]||null;
+    var visible=this.crunchData.classes.filter(function(c){
+      return c.tags&&c.tags.indexOf('not_cardio')===-1;
+    });
+    if(!visible.length)return '';
+    // Sort: preferred tag first, then by time.
+    visible.sort(function(a,b){
+      var aP=a.tags.some(function(t){return prefs.indexOf(t)===0;})?0:a.tags.some(function(t){return prefs.indexOf(t)>-1;})?1:2;
+      var bP=b.tags.some(function(t){return prefs.indexOf(t)===0;})?0:b.tags.some(function(t){return prefs.indexOf(t)>-1;})?1:2;
+      if(aP!==bP)return aP-bP;
+      return (a.time||'').localeCompare(b.time||'');
+    });
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    var h='<div class="crunch-classes"><div class="crunch-classes-head"><span>🏋️‍♀️ Crunch Classes Today</span>'+(stale?'<span class="crunch-stale">schedule refreshes 5am</span>':'')+'</div>';
+    visible.forEach(function(c){
+      var isTop=c.tags.some(function(t){return t===prefs[0];});
+      var isChosen=chosenClass&&chosenClass.name===c.name&&chosenClass.time===c.time;
+      h+='<button class="crunch-class-pill'+(isChosen?' selected':'')+(isTop?' match':'')+'" data-block="'+blockIdx+'" data-cname="'+esc(c.name)+'" data-ctime="'+esc(c.time)+'" data-cdur="'+(c.duration||'')+'" data-cinstr="'+esc(c.instructor||'')+'">'+
+         '<div class="cc-row1"><span class="cc-name">'+c.name+'</span>'+(isTop?'<span class="cc-match">✨ great match</span>':'')+'</div>'+
+         '<div class="cc-row2"><span class="cc-time">'+c.time+'</span><span class="cc-sep">·</span><span class="cc-dur">'+c.duration+' min</span>'+(c.instructor?'<span class="cc-sep">·</span><span class="cc-instr">'+c.instructor+'</span>':'')+'</div>'+
+         '</button>';
+    });
+    h+='<div class="crunch-or">or pick a machine solo</div></div>';
+    return h;
   },
 
   rMassage:function(){
@@ -525,7 +583,7 @@ var App = {
 
   rCardioBlock:function(ex,i,blockIdx,d,ses){
     var chosen=ses.machines&&ses.machines[blockIdx]||ex.fixed||null;
-    var chosenObj=chosen?MACHINES.find(function(m){return m.id===chosen;}):null;
+    var chosenObj=chosen&&chosen!=='class'?MACHINES.find(function(m){return m.id===chosen;}):null;
     var patternText=CARDIO_PATTERNS[ex.pattern]||'';
     var h='<div class="cardio-block">';
     h+='<div class="cardio-target"><span class="cardio-dur">'+ex.duration+' min</span>';
@@ -535,6 +593,8 @@ var App = {
     if(ex.fixed){
       h+='<div class="machine-fixed"><span class="machine-emoji">'+chosenObj.emoji+'</span><span>'+chosenObj.label+' · '+chosenObj.cue+'</span></div>';
     } else {
+      // Crunch class options (above machine picker)
+      h+=this.rCrunchClasses(blockIdx,ex.pattern,ses);
       h+='<div class="machine-picker" data-block="'+blockIdx+'">';
       MACHINES.forEach(function(m){
         h+='<button class="machine-pill'+(chosen===m.id?' selected':'')+'" data-machine="'+m.id+'" data-block="'+blockIdx+'"><span class="machine-emoji">'+m.emoji+'</span>'+m.label+'</button>';
@@ -553,6 +613,7 @@ var App = {
     var rxText=isTimeBased?(numSets+' × '+ex.time+'s'+eachLabel):(numSets+' × '+ex.reps+eachLabel);
     var perf=(ses.perf&&ses.perf[ex.id])||[];
     var h='<div class="exercise"><div class="exercise-header"><span class="exercise-name" data-exid="'+ex.id+'">'+info.name+'</span><span class="exercise-rx">'+rxText+'</span></div>';
+    if(info.yt)h+='<a href="'+info.yt+'" target="_blank" rel="noopener" class="ex-yt-inline">▶ Watch Form</a>';
     if(ex.note)h+='<div class="exercise-note">'+ex.note+'</div>';
     if(isTimeBased){
       h+='<div class="set-list">';
@@ -680,6 +741,26 @@ var App = {
       var d=ds(norm(new Date())),ses=S.session(d),block=parseInt(p.dataset.block),machine=p.dataset.machine;
       if(!ses.machines)ses.machines={};
       ses.machines[block]=machine;
+      // Clear any class choice for this block — user picked solo instead.
+      if(ses.crunchClasses&&ses.crunchClasses[block])delete ses.crunchClasses[block];
+      S.saveSession(d,ses);
+      self.render();
+    });});
+    // Crunch class pill picker
+    document.querySelectorAll('.crunch-class-pill').forEach(function(p){p.addEventListener('click',function(){
+      var d=ds(norm(new Date())),ses=S.session(d),block=parseInt(p.dataset.block);
+      if(!ses.crunchClasses)ses.crunchClasses={};
+      if(!ses.machines)ses.machines={};
+      var cls={name:p.dataset.cname,time:p.dataset.ctime,duration:parseInt(p.dataset.cdur)||null,instructor:p.dataset.cinstr||null};
+      // Toggle: if already selected, deselect
+      var cur=ses.crunchClasses[block];
+      if(cur&&cur.name===cls.name&&cur.time===cls.time){
+        delete ses.crunchClasses[block];
+        if(ses.machines[block]==='class')delete ses.machines[block];
+      } else {
+        ses.crunchClasses[block]=cls;
+        ses.machines[block]='class';
+      }
       S.saveSession(d,ses);
       self.render();
     });});

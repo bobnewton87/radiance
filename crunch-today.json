@@ -1,0 +1,56 @@
+{
+  "location": "Crunch Allen",
+  "address": "510 N Watters Rd, Allen, TX 75013",
+  "phone": "469.824.3022",
+  "locationUrl": "https://www.crunch.com/locations/allen",
+  "scrapedAt": "2026-04-24T01:03:22.554Z",
+  "date": "2026-04-23",
+  "classCount": 5,
+  "classes": [
+    {
+      "name": "Strong-er HIIT (HIITZone)",
+      "time": "5:30 am",
+      "duration": 45,
+      "instructor": "Serena G",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "Yoga Body Sculpt",
+      "time": "8:30 am",
+      "duration": 60,
+      "instructor": "Dimple P",
+      "tags": [
+        "not_cardio"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Serena G",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "So You Think You Can't Dance",
+      "time": "9:30 am",
+      "duration": 60,
+      "instructor": "Emily E",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "P3 Pilates",
+      "time": "10:30 am",
+      "duration": 45,
+      "instructor": "Mona D",
+      "tags": [
+        "not_cardio"
+      ]
+    }
+  ]
+}

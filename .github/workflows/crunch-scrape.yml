@@ -1,0 +1,43 @@
+name: Scrape Crunch Allen class schedule
+
+on:
+  schedule:
+    # Daily at 10:00 UTC = 5:00 AM CT (4:00 AM CDT during DST).
+    # Crunch opens at 5am on weekdays, so this runs right before open — catches
+    # any overnight schedule updates before her first possible workout.
+    - cron: '0 10 * * *'
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'scripts/scrape-crunch.js'
+      - '.github/workflows/crunch-scrape.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run scraper
+        run: node scripts/scrape-crunch.js
+
+      - name: Commit if changed
+        run: |
+          git config user.name "radiance-bot"
+          git config user.email "radiance-bot@users.noreply.github.com"
+          if git diff --quiet crunch-today.json; then
+            echo "No changes — skipping commit."
+          else
+            git add crunch-today.json
+            git commit -m "chore: refresh Crunch Allen class schedule ($(date -u +%Y-%m-%d))"
+            git push
+          fi
