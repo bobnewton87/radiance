@@ -460,6 +460,9 @@ var App = {
   init:function(){
     var self=this;
     S.set('appver',APP_VERSION); // Don't wipe user data on upgrade; just update the marker.
+    // Retroactively grant badges for completions logged before v6.
+    var total=Object.keys(S.completed).length;
+    COUNT_BADGES.forEach(function(b){ if(total>=b.n) S.grantBadge(b.id); });
     document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){self.tab=t.dataset.tab;self.woff=0;self.render();});});
     document.getElementById('menu-btn').addEventListener('click',function(){self.showPlansMenu();});
     this.render();
