@@ -3,13 +3,49 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-04-29T10:35:09.141Z",
-  "date": "2026-04-29",
-  "classCount": 9,
+  "scrapedAt": "2026-04-30T10:33:13.783Z",
+  "date": "2026-04-30",
+  "classCount": 12,
   "classes": [
     {
-      "name": "CircHIIT (HIITZone)",
+      "name": "The Ride: Let the Beat Drop",
       "time": "5:30 am",
+      "duration": 45,
+      "instructor": "Robyn R",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "8:30 am",
+      "duration": 45,
+      "instructor": "Rachael C.",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Belly, Butt, & Thighs Bootcamp",
+      "time": "8:30 am",
+      "duration": 30,
+      "instructor": "Rita J",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "Top to Bottom Burnout",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Rita J",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "ExtremeHIIT (HIITZone)",
+      "time": "9:30 am",
       "duration": 45,
       "instructor": "Deborah Y",
       "tags": [
@@ -17,55 +53,37 @@
       ]
     },
     {
-      "name": "Chisel",
-      "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Deborah Y",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Transform it: Cardio",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Deborah Y",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
       "name": "ZUMBA ®",
       "time": "9:30 am",
       "duration": 60,
-      "instructor": "Carola C",
+      "instructor": "Angie",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "P3 Pilates",
+      "name": "Chill the Flow Out Yoga",
       "time": "10:30 am",
-      "duration": 45,
-      "instructor": "Robyn R",
+      "duration": 60,
+      "instructor": "Sangita R",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "Barbell 45",
+      "name": "P3 Pilates",
       "time": "5:30 pm",
       "duration": 45,
-      "instructor": "Phena",
+      "instructor": "Rachael C.",
       "tags": [
-        "unknown"
+        "not_cardio"
       ]
     },
     {
-      "name": "ExtremeHIIT (HIITZone)",
+      "name": "Strong-er HIIT (HIITZone)",
       "time": "6:15 pm",
       "duration": 45,
-      "instructor": "Gideon E",
+      "instructor": "Bo",
       "tags": [
         "intervals"
       ]
@@ -74,7 +92,16 @@
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Liza",
+      "instructor": "Rachael C.",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "6:30 pm",
+      "duration": 45,
+      "instructor": "Ricardo G",
       "tags": [
         "steady"
       ]
