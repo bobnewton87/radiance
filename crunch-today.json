@@ -3,116 +3,107 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-04T10:38:13.188Z",
-  "date": "2026-05-04",
-  "classCount": 12,
+  "scrapedAt": "2026-05-05T10:32:06.455Z",
+  "date": "2026-05-05",
+  "classCount": 11,
   "classes": [
     {
-      "name": "Top to Bottom Burnout",
+      "name": "The Ride",
       "time": "5:30 am",
-      "duration": 30,
+      "duration": 45,
       "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Absolution",
-      "time": "6:00 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Chisel",
-      "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Robyn R",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Transform it: Cardio",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Robyn R",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Transform it: Strong",
-      "time": "9:30 am",
-      "duration": 30,
-      "instructor": "Robyn R",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Chill the Flow Out Yoga",
-      "time": "10:30 am",
+      "name": "Yoga Body Sculpt",
+      "time": "8:30 am",
       "duration": 60,
-      "instructor": "Stacey S",
+      "instructor": "Dimple P",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "So You Think You Can't Dance",
-      "time": "11:30 am",
-      "duration": 60,
-      "instructor": "Yoel M",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
       "name": "The Ride",
-      "time": "12:00 pm",
+      "time": "9:00 am",
       "duration": 45,
-      "instructor": "Kendall G",
+      "instructor": "Serena G",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Top to Bottom Burnout",
-      "time": "5:30 pm",
-      "duration": 30,
-      "instructor": "Phena",
+      "name": "ZUMBA ®",
+      "time": "9:30 am",
+      "duration": 60,
+      "instructor": "Rachael C.",
       "tags": [
-        "unknown"
+        "steady"
       ]
     },
     {
-      "name": "Absolution",
-      "time": "6:00 pm",
-      "duration": 30,
-      "instructor": "Phena",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "ExtremeHIIT (HIITZone)",
-      "time": "6:15 pm",
+      "name": "CircHIIT (HIITZone)",
+      "time": "9:30 am",
       "duration": 45,
-      "instructor": "Gideon E",
+      "instructor": "Deborah Y",
       "tags": [
         "intervals"
+      ]
+    },
+    {
+      "name": "Barbell 45",
+      "time": "10:30 am",
+      "duration": 45,
+      "instructor": "Rachael C.",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Barbell 45",
+      "time": "5:30 pm",
+      "duration": 45,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Superset HIIT (HIITZone)",
+      "time": "6:15 pm",
+      "duration": 45,
+      "instructor": "Nikki",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "The Ride: Level it Up",
+      "time": "6:30 pm",
+      "duration": 45,
+      "instructor": "Ricardo G",
+      "tags": [
+        "steady"
       ]
     },
     {
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Stephanie C",
+      "instructor": "Morena S",
       "tags": [
         "steady"
+      ]
+    },
+    {
+      "name": "Yoga Body Sculpt",
+      "time": "7:30 pm",
+      "duration": 60,
+      "instructor": "Rachael C.",
+      "tags": [
+        "not_cardio"
       ]
     }
   ]
