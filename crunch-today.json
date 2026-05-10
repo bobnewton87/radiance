@@ -3,35 +3,35 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-09T10:20:01.920Z",
-  "date": "2026-05-09",
+  "scrapedAt": "2026-05-10T10:25:35.858Z",
+  "date": "2026-05-10",
   "classCount": 3,
   "classes": [
     {
-      "name": "Love Your Muscles: Fundraiser for ALS",
-      "time": "9:00 am",
+      "name": "ZUMBA ®",
+      "time": "9:30 am",
       "duration": 60,
-      "instructor": "Braeden H",
+      "instructor": "Mark L",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "The Ride: Let the Beat Drop",
+      "time": "10:00 am",
+      "duration": 45,
+      "instructor": "Des",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "P3 Pilates",
+      "time": "10:30 am",
+      "duration": 45,
+      "instructor": "Serena G",
       "tags": [
         "not_cardio"
-      ]
-    },
-    {
-      "name": "The Ride",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Kendall G",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "10:00 am",
-      "duration": 60,
-      "instructor": "JoJo",
-      "tags": [
-        "steady"
       ]
     }
   ]
