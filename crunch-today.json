@@ -3,35 +3,107 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-17T10:28:58.804Z",
-  "date": "2026-05-17",
-  "classCount": 3,
+  "scrapedAt": "2026-05-18T11:17:06.729Z",
+  "date": "2026-05-18",
+  "classCount": 11,
   "classes": [
     {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Mark L",
+      "name": "Top to Bottom Burnout",
+      "time": "5:30 am",
+      "duration": 30,
+      "instructor": "Serena G",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
-      "name": "The Ride: Let the Beat Drop",
-      "time": "10:00 am",
-      "duration": 45,
-      "instructor": "Des",
+      "name": "Absolution",
+      "time": "6:00 am",
+      "duration": 30,
+      "instructor": "Serena G",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
+      "name": "Chisel",
+      "time": "8:30 am",
+      "duration": 30,
       "instructor": "Robyn R",
       "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Transform it: Cardio",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Transform it: Strong",
+      "time": "9:30 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Chill the Flow Out Yoga",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Stacey S",
+      "tags": [
         "not_cardio"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "12:00 pm",
+      "duration": 45,
+      "instructor": "Kendall G",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Top to Bottom Burnout",
+      "time": "5:30 pm",
+      "duration": 30,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Absolution",
+      "time": "6:00 pm",
+      "duration": 30,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "ExtremeHIIT (HIITZone)",
+      "time": "6:15 pm",
+      "duration": 45,
+      "instructor": "Gideon E",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "ZUMBA ®",
+      "time": "6:30 pm",
+      "duration": 60,
+      "instructor": "Stephanie C",
+      "tags": [
+        "steady"
       ]
     }
   ]
