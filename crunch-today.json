@@ -3,33 +3,60 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-24T10:31:25.915Z",
-  "date": "2026-05-24",
-  "classCount": 3,
+  "scrapedAt": "2026-05-25T11:20:43.531Z",
+  "date": "2026-05-25",
+  "classCount": 6,
   "classes": [
     {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Mark L",
+      "name": "Top to Bottom Burnout",
+      "time": "5:30 am",
+      "duration": 30,
+      "instructor": "Fabulous Freda",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
-      "name": "The Ride: Let the Beat Drop",
-      "time": "10:00 am",
-      "duration": 45,
-      "instructor": "Des",
+      "name": "Absolution",
+      "time": "6:00 am",
+      "duration": 30,
+      "instructor": "Fabulous Freda",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
+      "name": "Chisel",
+      "time": "8:30 am",
+      "duration": 30,
       "instructor": "Robyn R",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Transform it: Cardio",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Transform it: Strong",
+      "time": "9:30 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Chill the Flow Out Yoga",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Erica P",
       "tags": [
         "not_cardio"
       ]
