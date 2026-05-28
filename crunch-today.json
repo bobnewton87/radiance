@@ -3,78 +3,78 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-27T11:08:58.786Z",
-  "date": "2026-05-27",
+  "scrapedAt": "2026-05-28T11:10:38.677Z",
+  "date": "2026-05-28",
   "classCount": 9,
   "classes": [
     {
-      "name": "CircHIIT (HIITZone)",
+      "name": "The Ride: Let the Beat Drop",
       "time": "5:30 am",
       "duration": 45,
+      "instructor": "Serena G",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Belly, Butt, & Thighs Bootcamp",
+      "time": "8:30 am",
+      "duration": 30,
       "instructor": "Serena G",
       "tags": [
         "intervals"
       ]
     },
     {
-      "name": "Chisel",
-      "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Deborah Y",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Transform it: Cardio",
+      "name": "Top to Bottom Burnout",
       "time": "9:00 am",
       "duration": 30,
-      "instructor": "Deborah Y",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Carola C",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
-      "instructor": "Robyn R",
-      "tags": [
-        "not_cardio"
-      ]
-    },
-    {
-      "name": "Barbell 45",
-      "time": "5:30 pm",
-      "duration": 45,
-      "instructor": "Phena",
+      "instructor": "Serena G",
       "tags": [
         "unknown"
       ]
     },
     {
       "name": "ExtremeHIIT (HIITZone)",
-      "time": "6:15 pm",
+      "time": "9:30 am",
       "duration": 45,
-      "instructor": "Gideon E",
+      "instructor": "Deborah Y",
       "tags": [
         "intervals"
       ]
     },
     {
       "name": "ZUMBA ®",
-      "time": "6:30 pm",
+      "time": "9:30 am",
       "duration": 60,
-      "instructor": "Liza",
+      "instructor": "Angie",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Chill the Flow Out Yoga",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Rita J",
+      "tags": [
+        "not_cardio"
+      ]
+    },
+    {
+      "name": "Strong-er HIIT (HIITZone)",
+      "time": "6:15 pm",
+      "duration": 45,
+      "instructor": "Bo",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "6:30 pm",
+      "duration": 45,
+      "instructor": "Ricardo G",
       "tags": [
         "steady"
       ]
