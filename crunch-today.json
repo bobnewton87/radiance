@@ -3,86 +3,50 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-05-28T11:10:38.677Z",
-  "date": "2026-05-28",
-  "classCount": 9,
+  "scrapedAt": "2026-05-29T11:03:33.718Z",
+  "date": "2026-05-29",
+  "classCount": 5,
   "classes": [
     {
-      "name": "The Ride: Let the Beat Drop",
+      "name": "Strong-er HIIT (HIITZone)",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
       "tags": [
-        "steady"
+        "intervals"
       ]
     },
     {
-      "name": "Belly, Butt, & Thighs Bootcamp",
+      "name": "Yoga Body Sculpt",
       "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
-      "name": "Top to Bottom Burnout",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "ExtremeHIIT (HIITZone)",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Deborah Y",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
       "duration": 60,
-      "instructor": "Angie",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "Chill the Flow Out Yoga",
-      "time": "10:30 am",
-      "duration": 60,
-      "instructor": "Rita J",
+      "instructor": "Dimple P",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "Strong-er HIIT (HIITZone)",
-      "time": "6:15 pm",
-      "duration": 45,
-      "instructor": "Bo",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
       "name": "The Ride",
-      "time": "6:30 pm",
+      "time": "9:00 am",
       "duration": 45,
-      "instructor": "Ricardo G",
+      "instructor": "Serena G",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Yoga Body Sculpt",
-      "time": "7:30 pm",
+      "name": "So You Think You Can't Dance",
+      "time": "9:30 am",
       "duration": 60,
+      "instructor": "Emily E",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "P3 Pilates",
+      "time": "10:30 am",
+      "duration": 45,
       "instructor": "Mona D",
       "tags": [
         "not_cardio"
