@@ -3,35 +3,26 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-06-19T11:30:10.711Z",
-  "date": "2026-06-19",
-  "classCount": 5,
+  "scrapedAt": "2026-06-20T10:46:13.577Z",
+  "date": "2026-06-20",
+  "classCount": 4,
   "classes": [
     {
-      "name": "Strong-er HIIT (HIITZone)",
-      "time": "5:30 am",
+      "name": "Superset HIIT (HIITZone)",
+      "time": "9:00 am",
       "duration": 45,
-      "instructor": "Serena G",
+      "instructor": "Braeden H",
       "tags": [
         "intervals"
       ]
     },
     {
-      "name": "Yoga Body Sculpt",
-      "time": "8:30 am",
-      "duration": 60,
-      "instructor": "Dimple P",
+      "name": "Barbell 45",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Deborah Y",
       "tags": [
-        "not_cardio"
-      ]
-    },
-    {
-      "name": "So You Think You Can't Dance",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Latifah A",
-      "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
@@ -44,12 +35,12 @@
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
-      "instructor": "Serena G",
+      "name": "ZUMBA ®",
+      "time": "10:00 am",
+      "duration": 60,
+      "instructor": "JOJO W.",
       "tags": [
-        "not_cardio"
+        "steady"
       ]
     }
   ]
