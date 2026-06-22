@@ -3,35 +3,89 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-06-21T11:02:06.432Z",
-  "date": "2026-06-21",
-  "classCount": 3,
+  "scrapedAt": "2026-06-22T12:00:14.652Z",
+  "date": "2026-06-22",
+  "classCount": 9,
   "classes": [
     {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Betsy H",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "The Ride: Let the Beat Drop",
-      "time": "10:00 am",
-      "duration": 45,
-      "instructor": "Des",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
+      "name": "Top to Bottom Burnout",
+      "time": "5:30 am",
+      "duration": 30,
       "instructor": "Serena G",
       "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Absolution",
+      "time": "6:00 am",
+      "duration": 30,
+      "instructor": "Serena G",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Band Camp",
+      "time": "8:30 am",
+      "duration": 30,
+      "instructor": "Serena G",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Transform it: Cardio",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Serena G",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Transform it: Core",
+      "time": "9:30 am",
+      "duration": 30,
+      "instructor": "Serena G",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Chill the Flow Out Yoga",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Fabulous Freda",
+      "tags": [
         "not_cardio"
+      ]
+    },
+    {
+      "name": "Top to Bottom Burnout",
+      "time": "5:30 pm",
+      "duration": 30,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Absolution",
+      "time": "6:00 pm",
+      "duration": 30,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "ZUMBA ®",
+      "time": "6:30 pm",
+      "duration": 60,
+      "instructor": "Stephanie C",
+      "tags": [
+        "steady"
       ]
     }
   ]
