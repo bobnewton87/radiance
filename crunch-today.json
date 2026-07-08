@@ -3,60 +3,78 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-07-07T12:21:39.040Z",
-  "date": "2026-07-07",
-  "classCount": 8,
+  "scrapedAt": "2026-07-08T11:42:04.644Z",
+  "date": "2026-07-08",
+  "classCount": 9,
   "classes": [
     {
-      "name": "The Ride",
+      "name": "CircHIIT (HIITZone)",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "Yoga Body Sculpt",
-      "time": "8:30 am",
-      "duration": 60,
-      "instructor": "Dimple P",
-      "tags": [
-        "not_cardio"
-      ]
-    },
-    {
-      "name": "The Ride",
-      "time": "9:00 am",
-      "duration": 45,
-      "instructor": "Serena G",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "CircHIIT (HIITZone)",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Deborah Y",
       "tags": [
         "intervals"
       ]
     },
     {
-      "name": "Barbell 45",
-      "time": "5:30 pm",
+      "name": "Beach Workout - Legs, Core & More",
+      "time": "8:30 am",
+      "duration": 30,
+      "instructor": "Deborah Y",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Transform it: Cardio",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Deborah Y",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "ZUMBA ®",
+      "time": "9:30 am",
+      "duration": 60,
+      "instructor": "Angie",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "P3 Pilates",
+      "time": "10:30 am",
       "duration": 45,
+      "instructor": "Robyn R",
+      "tags": [
+        "not_cardio"
+      ]
+    },
+    {
+      "name": "Beach Workout - Arms & Abs",
+      "time": "5:30 pm",
+      "duration": 30,
       "instructor": "Phena",
       "tags": [
         "unknown"
       ]
     },
     {
-      "name": "Superset HIIT (HIITZone)",
+      "name": "Beach Workout - Legs, Core & More",
+      "time": "6:00 pm",
+      "duration": 30,
+      "instructor": "Phena",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "ExtremeHIIT (HIITZone)",
       "time": "6:15 pm",
       "duration": 45,
-      "instructor": "Nikki",
+      "instructor": "Gideon E",
       "tags": [
         "intervals"
       ]
@@ -65,16 +83,7 @@
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Betsy",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "The Ride: Level it Up",
-      "time": "6:30 pm",
-      "duration": 45,
-      "instructor": "Ricardo G",
+      "instructor": "Liza",
       "tags": [
         "steady"
       ]
