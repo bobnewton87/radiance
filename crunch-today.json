@@ -3,12 +3,12 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-07-08T11:42:04.644Z",
-  "date": "2026-07-08",
-  "classCount": 9,
+  "scrapedAt": "2026-07-10T12:19:33.046Z",
+  "date": "2026-07-10",
+  "classCount": 5,
   "classes": [
     {
-      "name": "CircHIIT (HIITZone)",
+      "name": "Strong-er HIIT (HIITZone)",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
@@ -17,28 +17,28 @@
       ]
     },
     {
-      "name": "Beach Workout - Legs, Core & More",
+      "name": "Yoga Body Sculpt",
       "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Deborah Y",
+      "duration": 60,
+      "instructor": "Dimple P",
       "tags": [
-        "unknown"
+        "not_cardio"
       ]
     },
     {
-      "name": "Transform it: Cardio",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Deborah Y",
+      "name": "The Ride",
+      "time": "9:30 am",
+      "duration": 45,
+      "instructor": "Serena G",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "ZUMBA ®",
+      "name": "So You Think You Can't Dance",
       "time": "9:30 am",
       "duration": 60,
-      "instructor": "Angie",
+      "instructor": "Emily E",
       "tags": [
         "steady"
       ]
@@ -47,45 +47,9 @@
       "name": "P3 Pilates",
       "time": "10:30 am",
       "duration": 45,
-      "instructor": "Robyn R",
+      "instructor": "Mona D",
       "tags": [
         "not_cardio"
-      ]
-    },
-    {
-      "name": "Beach Workout - Arms & Abs",
-      "time": "5:30 pm",
-      "duration": 30,
-      "instructor": "Phena",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Beach Workout - Legs, Core & More",
-      "time": "6:00 pm",
-      "duration": 30,
-      "instructor": "Phena",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "ExtremeHIIT (HIITZone)",
-      "time": "6:15 pm",
-      "duration": 45,
-      "instructor": "Gideon E",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "6:30 pm",
-      "duration": 60,
-      "instructor": "Liza",
-      "tags": [
-        "steady"
       ]
     }
   ]
