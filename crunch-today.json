@@ -3,78 +3,87 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-07-22T11:41:35.776Z",
-  "date": "2026-07-22",
-  "classCount": 10,
+  "scrapedAt": "2026-07-23T11:45:13.112Z",
+  "date": "2026-07-23",
+  "classCount": 11,
   "classes": [
     {
-      "name": "CircHIIT (HIITZone)",
+      "name": "The Ride: Let the Beat Drop",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
       "tags": [
-        "intervals"
+        "steady"
       ]
     },
     {
-      "name": "Beach Workout - Legs, Core & More",
+      "name": "The Ride",
+      "time": "8:30 am",
+      "duration": 45,
+      "instructor": "Rachael C.",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Beach Workout - Arms & Abs",
       "time": "8:30 am",
       "duration": 30,
-      "instructor": "Deborah Y",
+      "instructor": "Serena G",
       "tags": [
         "unknown"
       ]
     },
     {
-      "name": "Transform it: Cardio",
+      "name": "Top to Bottom Burnout",
       "time": "9:00 am",
       "duration": 30,
-      "instructor": "Deborah Y",
+      "instructor": "Serena G",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
       "name": "ZUMBA ®",
       "time": "9:30 am",
       "duration": 60,
-      "instructor": "Carola C",
+      "instructor": "Angie",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
+      "name": "ExtremeHIIT (HIITZone)",
+      "time": "9:30 am",
       "duration": 45,
-      "instructor": "Robyn R",
+      "instructor": "Deborah Y",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "Chill the Flow Out Yoga",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Sangita R",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "Beach Workout - Arms & Abs",
+      "name": "P3 Pilates",
       "time": "5:30 pm",
-      "duration": 30,
-      "instructor": "Phena",
+      "duration": 45,
+      "instructor": "Mona D",
       "tags": [
-        "unknown"
+        "not_cardio"
       ]
     },
     {
-      "name": "Beach Workout - Legs, Core & More",
-      "time": "6:00 pm",
-      "duration": 30,
-      "instructor": "Phena",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "ExtremeHIIT (HIITZone)",
+      "name": "GladiatorHIIT(HIITZone)",
       "time": "6:15 pm",
       "duration": 45,
-      "instructor": "Gideon E",
+      "instructor": "Nikki",
       "tags": [
         "intervals"
       ]
@@ -83,18 +92,18 @@
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Angela H",
+      "instructor": "Mark L",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Yoga Body Sculpt",
-      "time": "7:30 pm",
-      "duration": 60,
-      "instructor": "Mona D",
+      "name": "The Ride",
+      "time": "6:30 pm",
+      "duration": 45,
+      "instructor": "Ricardo G",
       "tags": [
-        "not_cardio"
+        "steady"
       ]
     }
   ]
