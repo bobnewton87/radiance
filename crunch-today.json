@@ -3,87 +3,78 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-07-27T12:50:31.673Z",
-  "date": "2026-07-27",
-  "classCount": 9,
+  "scrapedAt": "2026-07-28T11:49:56.563Z",
+  "date": "2026-07-28",
+  "classCount": 8,
   "classes": [
     {
-      "name": "Top to Bottom Burnout",
+      "name": "The Ride",
       "time": "5:30 am",
-      "duration": 30,
+      "duration": 45,
       "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Absolution",
-      "time": "6:00 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Band Camp",
-      "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Robyn R",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Transform it: Cardio",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Robyn R",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Transform it: Core",
-      "time": "9:30 am",
-      "duration": 30,
-      "instructor": "Robyn R",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Chill the Flow Out Yoga",
-      "time": "10:30 am",
+      "name": "Yoga Body Sculpt",
+      "time": "8:30 am",
       "duration": 60,
-      "instructor": "Rita J",
+      "instructor": "Dimple P",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "Top to Bottom Burnout",
+      "name": "The Ride",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Serena G",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "CircHIIT (HIITZone)",
+      "time": "9:30 am",
+      "duration": 45,
+      "instructor": "Deborah Y",
+      "tags": [
+        "intervals"
+      ]
+    },
+    {
+      "name": "Barbell 45",
       "time": "5:30 pm",
-      "duration": 30,
+      "duration": 45,
       "instructor": "Phena",
       "tags": [
         "unknown"
       ]
     },
     {
-      "name": "Absolution",
-      "time": "6:00 pm",
-      "duration": 30,
-      "instructor": "Phena",
+      "name": "Superset HIIT (HIITZone)",
+      "time": "6:15 pm",
+      "duration": 45,
+      "instructor": "Nikki",
       "tags": [
-        "unknown"
+        "intervals"
+      ]
+    },
+    {
+      "name": "The Ride: Level it Up",
+      "time": "6:30 pm",
+      "duration": 45,
+      "instructor": "Ricardo G",
+      "tags": [
+        "steady"
       ]
     },
     {
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Morena S",
+      "instructor": "Betsy",
       "tags": [
         "steady"
       ]
