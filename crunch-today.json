@@ -3,44 +3,35 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-08-15T10:12:26.216Z",
-  "date": "2026-08-15",
-  "classCount": 4,
+  "scrapedAt": "2026-08-16T10:12:58.475Z",
+  "date": "2026-08-16",
+  "classCount": 3,
   "classes": [
     {
-      "name": "Barbell 45",
-      "time": "9:00 am",
+      "name": "ZUMBA ®",
+      "time": "9:30 am",
+      "duration": 60,
+      "instructor": "Mark L",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "The Ride: Let the Beat Drop",
+      "time": "10:00 am",
+      "duration": 45,
+      "instructor": "Des",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "P3 Pilates",
+      "time": "10:30 am",
       "duration": 45,
       "instructor": "Robyn R",
       "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Superset HIIT (HIITZone)",
-      "time": "9:00 am",
-      "duration": 45,
-      "instructor": "Somaya M",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
-      "name": "The Ride",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Rachael C.",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "10:00 am",
-      "duration": 60,
-      "instructor": "JOJO W.",
-      "tags": [
-        "steady"
+        "not_cardio"
       ]
     }
   ]
