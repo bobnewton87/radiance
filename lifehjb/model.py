@@ -232,6 +232,126 @@ class Numerics:
 
 
 @dataclass(frozen=True)
+class QuadratureSpec:
+    """How the return expectation is integrated.
+
+    ``gauss_hermite`` is the v2 rule. It is excellent for smooth integrands and
+    **useless** for the v3 downturn indicator: the separation multiplier is a step
+    function of the realized return, and whether a Hermite node happens to land
+    past the threshold is an accident of node placement. At the base scenario and
+    pi = 1 the true P(R' < 0.85) is 0.1037, and Gauss-Hermite reports 0.031 at 7
+    nodes, 0.108 at 15, 0.150 at 21 and 0.056 at 25 -- it does not converge.
+
+    ``split`` breaks the domain at the threshold and runs composite
+    Gauss-Legendre against the normal density on each side. The mass either side
+    is then exact by construction, and 4 panels x 8 nodes reproduces E[z], E[z^2]
+    and E[e^(sigma z)] to machine precision.
+    """
+    kind: str = "split"          # "split" | "gauss_hermite"
+    panels: int = 4
+    m: int = 8
+    z_max: float = 8.5
+    n_gh: int = 7
+
+
+@dataclass(frozen=True)
+class HumanCapitalParams:
+    """Human capital is an equity-like claim, not a bond. v2 assumed beta_H = 0."""
+    beta_H: float = 1.6
+    portfolio_sector_overlap: float = 0.35
+    gammas_reported: tuple = (1.0, 1.5, 2.0, 3.0)
+    T_work_cap: float = 65.0
+    diversifying_sleeve: float = 0.0      # share of W genuinely orthogonal to H
+
+
+@dataclass(frozen=True)
+class CareerParams:
+    """Involuntary separation, and what it costs."""
+    base_sep: Dict[str, float] = field(default_factory=dict)
+    amat_seasoning_years: int = 2
+    amat_sep_after: float = 0.05
+    downturn_threshold: float = -0.15
+    downturn_factor: float = 3.0
+    severance_months: float = 4.0
+    search_duration_dist: Dict[int, float] = field(default_factory=dict)   # months -> prob
+    reentry_haircut: float = 0.10
+    searching_seat: Dict[str, float] = field(default_factory=dict)
+
+    def sep_rate(self, seat_id: str, tenure: int = 99) -> float:
+        if seat_id == "amat400":
+            base = self.base_sep.get("amat400", 0.10)
+            return base if tenure < self.amat_seasoning_years else self.amat_sep_after
+        return float(self.base_sep.get(seat_id, 0.0))
+
+    @property
+    def enabled(self) -> bool:
+        return any(v > 0 for v in self.base_sep.values())
+
+
+@dataclass(frozen=True)
+class AvailabilityParams:
+    """Seats arrive; they are not on tap. This is what gives an option a price."""
+    p_nego: float = 0.35
+    # Negotiation success when the outside option is NOT maintained. A
+    # negotiation without a credible alternative is a request, not a
+    # negotiation -- and the v3 spec's own note that downshift250's permanent
+    # availability "is what makes every other negotiation credible" points the
+    # same way. Setting this equal to p_nego recovers the literal spec, under
+    # which the two channels are pure substitutes and OV *falls* in p_nego.
+    p_nego_unmaintained: float = 0.10
+    nego_cooldown_years: int = 2
+    p_outside: float = 0.40
+    p_outside_unmaintained: float = 0.05
+    phi_maintain: float = 0.02
+    p_oldrole: float = 0.50
+    p_grind: float = 1.0                 # not specified in v3; internal scope expansion
+    maintain_outside_option: bool = True
+    # Seats at the *current* employer. The v3 availability table ("current350:
+    # always available (status quo)") is written from the perspective of an
+    # employed agent -- the status quo is on offer because you are already in it.
+    # After an involuntary separation it is not: you cannot walk back into the
+    # job you were just let go from. These are therefore withdrawn from the
+    # choice set while searching, which is what gives the outside option an
+    # insurance value rather than a purely cosmetic one.
+    same_employer: tuple = ("current350", "grind500", "renegotiated350")
+    # Null value for v2 recovery: every seat on offer from every state, every year.
+    unrestricted: bool = False
+
+    def outside(self) -> float:
+        return self.p_outside if self.maintain_outside_option else self.p_outside_unmaintained
+
+    def nego(self) -> float:
+        return self.p_nego if self.maintain_outside_option else self.p_nego_unmaintained
+
+    @staticmethod
+    def _effective(p: float, cooldown: float) -> float:
+        return p / (1.0 + (1.0 - p) * float(cooldown))
+
+    @property
+    def p_nego_effective(self) -> float:
+        """Long-run annual arrival rate once the cooldown is accounted for.
+
+        The one-shot-plus-cooldown renewal process has mean time between
+        attempts ``1 + (1-p)*cooldown``, so folding it into a constant annual
+        arrival rate costs one state dimension and preserves the long-run rate.
+        """
+        return self._effective(self.nego(), self.nego_cooldown_years)
+
+
+@dataclass(frozen=True)
+class CrunchParams:
+    """A real execution commitment the solver must not be allowed to wish away."""
+    periods: int = 1
+    multiplier: float = 1.30
+
+
+@dataclass(frozen=True)
+class StressTest:
+    drawdown: float = -0.35
+    ages: tuple = (42, 46, 50)
+
+
+@dataclass(frozen=True)
 class Params:
     age0: float = 39.0
     W0: float = 1_850_000.0
@@ -269,6 +389,14 @@ class Params:
 
     seats: tuple = ()
     numerics: Numerics = field(default_factory=Numerics)
+
+    # -- v3 -------------------------------------------------------------------
+    human_capital: HumanCapitalParams = field(default_factory=HumanCapitalParams)
+    career: CareerParams = field(default_factory=CareerParams)
+    availability: AvailabilityParams = field(default_factory=AvailabilityParams)
+    crunch: CrunchParams = field(default_factory=CrunchParams)
+    stress: StressTest = field(default_factory=StressTest)
+    quadrature: QuadratureSpec = field(default_factory=QuadratureSpec)
 
     # Calibrated utility intercept. Filled in by calibrate.py; None until then.
     b: Optional[float] = None
@@ -329,6 +457,12 @@ def params_from_dict(cfg: Dict[str, Any]) -> Params:
     mc = cfg.get("mc", {}) or {}
     num = cfg.get("numerics", {}) or {}
     rets = cfg.get("returns", {}) or {}
+    hcap = cfg.get("human_capital", {}) or {}
+    car = cfg.get("career", {}) or {}
+    avail = cfg.get("availability", {}) or {}
+    crun = cfg.get("crunch", {}) or {}
+    stres = cfg.get("stress_test", {}) or {}
+    quad = cfg.get("quadrature", {}) or {}
 
     scenarios = {k: ReturnScenario(**v) for k, v in rets.items()}
     if not scenarios:
@@ -372,7 +506,7 @@ def params_from_dict(cfg: Dict[str, Any]) -> Params:
         ss_enabled=bool(ss.get("enabled", True)),
         ss_amount=float(ss.get("amount", 40_000.0)),
         ss_age=float(ss.get("age", 67.0)),
-        switching_enabled=bool(sw.get("enabled", False)),
+        switching_enabled=bool(sw.get("enabled", True)),
         kappa_W=float(sw.get("kappa_W", 40_000.0)),
         kappa_h=float(sw.get("kappa_h", 0.02)),
         runway_years=float(bnd.get("runway_years", 3.0)),
@@ -395,6 +529,57 @@ def params_from_dict(cfg: Dict[str, Any]) -> Params:
             age_max=float(num.get("age_max", 100.0)),
         ),
         b=(float(cfg["b"]) if cfg.get("b") is not None else None),
+        human_capital=HumanCapitalParams(
+            beta_H=float(hcap.get("beta_H", 1.6)),
+            portfolio_sector_overlap=float(hcap.get("portfolio_sector_overlap", 0.35)),
+            gammas_reported=tuple(float(g) for g in
+                                  hcap.get("gammas_reported", [1.0, 1.5, 2.0, 3.0])),
+            T_work_cap=float(hcap.get("T_work_cap", 65.0)),
+            diversifying_sleeve=float(hcap.get("diversifying_sleeve", 0.0)),
+        ),
+        career=CareerParams(
+            base_sep={str(k): float(v) for k, v in (car.get("base_sep") or {}).items()},
+            amat_seasoning_years=int(car.get("amat_seasoning_years", 2)),
+            amat_sep_after=float(car.get("amat_sep_after", 0.05)),
+            downturn_threshold=float(car.get("downturn_threshold", -0.15)),
+            downturn_factor=float(car.get("downturn_factor", 3.0)),
+            severance_months=float(car.get("severance_months", 4.0)),
+            search_duration_dist={int(k): float(v) for k, v in
+                                  (car.get("search_duration_dist")
+                                   or {3: 0.30, 6: 0.45, 9: 0.15, 12: 0.10}).items()},
+            reentry_haircut=float(car.get("reentry_haircut", 0.10)),
+            searching_seat={str(k): float(v) for k, v in
+                            (car.get("searching_seat") or {}).items()},
+        ),
+        availability=AvailabilityParams(
+            p_nego=float(avail.get("p_nego", 0.35)),
+            p_nego_unmaintained=float(avail.get("p_nego_unmaintained", 0.10)),
+            nego_cooldown_years=int(avail.get("nego_cooldown_years", 2)),
+            p_outside=float(avail.get("p_outside", 0.40)),
+            p_outside_unmaintained=float(avail.get("p_outside_unmaintained", 0.05)),
+            phi_maintain=float(avail.get("phi_maintain", 0.02)),
+            p_oldrole=float(avail.get("p_oldrole", 0.50)),
+            p_grind=float(avail.get("p_grind", 1.0)),
+            maintain_outside_option=bool(avail.get("maintain_outside_option", True)),
+            same_employer=tuple(avail.get("same_employer",
+                                          ["current350", "grind500", "renegotiated350"])),
+            unrestricted=bool(avail.get("unrestricted", False)),
+        ),
+        crunch=CrunchParams(
+            periods=int(crun.get("periods", 1)),
+            multiplier=float(crun.get("multiplier", 1.30)),
+        ),
+        stress=StressTest(
+            drawdown=float(stres.get("drawdown", -0.35)),
+            ages=tuple(int(a) for a in stres.get("ages", [42, 46, 50])),
+        ),
+        quadrature=QuadratureSpec(
+            kind=str(quad.get("kind", "split")),
+            panels=int(quad.get("panels", 4)),
+            m=int(quad.get("m", 8)),
+            z_max=float(quad.get("z_max", 8.5)),
+            n_gh=int(num.get("n_gh", quad.get("n_gh", 7))),
+        ),
     )
 
 
@@ -434,6 +619,64 @@ def gauss_hermite(n: int):
     """Nodes/weights for E[f(Z)], Z ~ N(0,1)."""
     x, w = np.polynomial.hermite.hermgauss(n)
     return np.sqrt(2.0) * x, w / np.sqrt(np.pi)
+
+
+def return_quadrature(pi: np.ndarray, sc: ReturnScenario, spec: QuadratureSpec,
+                      downturn_threshold: float):
+    """Nodes, weights and the downturn mask for the return expectation.
+
+    Returns ``(lnR, w, down)``, each shaped ``(n_pi, n_k)``. Weights sum to 1
+    along the node axis for every pi. ``down`` marks the nodes where
+    ``R' < 1 + downturn_threshold`` -- the states in which the separation hazard
+    is multiplied up.
+
+    Under ``kind="split"`` the domain is broken exactly at the threshold, so
+    ``w[down].sum()`` equals the true P(R' < 1 + threshold) to machine precision
+    rather than to wherever the nodes happened to fall.
+    """
+    from scipy.stats import norm
+
+    pi = np.asarray(pi, dtype=float)
+    mu = sc.rf_real + pi * sc.erp - 0.5 * pi ** 2 * sc.sigma ** 2
+    sd = pi * sc.sigma
+    ln_thr = np.log(1.0 + downturn_threshold)
+
+    if spec.kind == "gauss_hermite":
+        z, wk = gauss_hermite(spec.n_gh)
+        lnR = mu[:, None] + sd[:, None] * z[None, :]
+        w = np.broadcast_to(wk[None, :], lnR.shape).copy()
+        return lnR, w, lnR < ln_thr
+
+    if spec.kind != "split":
+        raise ValueError(f"unknown quadrature kind {spec.kind!r}")
+
+    x, gl = np.polynomial.legendre.leggauss(spec.m)
+    n_k = 2 * spec.panels * spec.m
+    lnR = np.empty((pi.size, n_k))
+    w = np.zeros((pi.size, n_k))
+
+    for i in range(pi.size):
+        if sd[i] <= 0.0:
+            # Degenerate: a single certain return. Pad the rest with zero weight.
+            lnR[i, :] = mu[i]
+            w[i, 0] = 1.0
+            continue
+        z_star = float(np.clip((ln_thr - mu[i]) / sd[i], -spec.z_max, spec.z_max))
+        zs, ws = [], []
+        for lo, hi in ((-spec.z_max, z_star), (z_star, spec.z_max)):
+            edges = np.linspace(lo, hi, spec.panels + 1)
+            for a, bnd in zip(edges[:-1], edges[1:]):
+                half = 0.5 * (bnd - a)
+                zz = half * x + 0.5 * (a + bnd)
+                zs.append(zz)
+                ws.append(half * gl * norm.pdf(zz))
+        zz = np.concatenate(zs)
+        ww = np.concatenate(ws)
+        ww = ww / ww.sum()
+        lnR[i] = mu[i] + sd[i] * zz
+        w[i] = ww
+
+    return lnR, w, lnR < ln_thr
 
 
 def log_return_grid(pi: np.ndarray, sc: ReturnScenario, n_gh: int) -> np.ndarray:

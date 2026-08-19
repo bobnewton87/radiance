@@ -15,7 +15,7 @@ import numpy as np
 
 from .model import Params, net_income
 from .solver import (Solution, build_grids, felicity_check, shadow_prices, solve,
-                     subsistence_consumption)
+                     shadow_prices_v3, solve_v3, subsistence_consumption)
 
 # --------------------------------------------------------------------------- #
 # rho from savings history                                                     #
@@ -204,3 +204,66 @@ def calibrate_b_sweep(params: Params, targets: Optional[List[float]] = None,
     tgts = targets or [params.vsl_band[0], params.vsl_target, params.vsl_band[1]]
     return {float(t): calibrate_b(params, vsl_target=float(t), scenario=scenario)
             for t in sorted(set(float(t) for t in tgts))}
+
+
+# --------------------------------------------------------------------------- #
+# v3 calibration                                                               #
+# --------------------------------------------------------------------------- #
+
+def _vsl_of_b_v3(params: Params, b: float, scenario: str) -> Dict[str, float]:
+    sol = solve_v3(params, scenario=scenario, b=b)
+    return shadow_prices_v3(sol, params.W0, params.h0, params.age0,
+                            sol.space.start_index())
+
+
+def calibrate_b_v3(params: Params, vsl_target: Optional[float] = None,
+                   scenario: Optional[str] = None, tol: float = 0.005,
+                   coarse_iters: int = 8, fine_iters: int = 3,
+                   b_guess: float = -9.3) -> VSLFit:
+    """Solve VSL(b) = target under the v3 model.
+
+    v3 solves are ~9x more expensive than v2's, so a blind bisection is not
+    affordable. VSL is close to linear in b, so a secant on a coarse grid --
+    seeded from the v2 neighbourhood rather than from a wide bracket -- lands
+    close, and a couple of steps on the production grid finish the job.
+    """
+    target = float(params.vsl_target if vsl_target is None else vsl_target)
+    scen = scenario or params.scenario
+
+    cp = _coarse(params)
+    b0, b1 = b_guess - 0.5, b_guess + 0.5
+    f0 = _vsl_of_b_v3(cp, b0, scen)["VSL"] - target
+    f1 = _vsl_of_b_v3(cp, b1, scen)["VSL"] - target
+    for _ in range(coarse_iters):
+        if abs(f1 - f0) < 1e-9:
+            break
+        b2 = float(np.clip(b1 - f1 * (b1 - b0) / (f1 - f0), -25.0, 10.0))
+        f2 = _vsl_of_b_v3(cp, b2, scen)["VSL"] - target
+        b0, f0, b1, f1 = b1, f1, b2, f2
+        if abs(f1) / target < tol:
+            break
+
+    b0, b1 = b1 - 0.15, b1 + 0.15
+    sp0 = _vsl_of_b_v3(params, b0, scen)
+    sp1 = _vsl_of_b_v3(params, b1, scen)
+    f0, f1 = sp0["VSL"] - target, sp1["VSL"] - target
+    best_b, best_sp = (b1, sp1) if abs(f1) < abs(f0) else (b0, sp0)
+    it = 2
+    while it < 2 + fine_iters and abs(best_sp["VSL"] / target - 1.0) > tol:
+        if abs(f1 - f0) < 1e-9:
+            break
+        b2 = float(np.clip(b1 - f1 * (b1 - b0) / (f1 - f0), -25.0, 10.0))
+        sp2 = _vsl_of_b_v3(params, b2, scen)
+        f2 = sp2["VSL"] - target
+        b0, f0, b1, f1 = b1, f1, b2, f2
+        it += 1
+        if abs(f2) < abs(best_sp["VSL"] - target):
+            best_b, best_sp = b2, sp2
+
+    chk = felicity_check(params, build_grids(params), best_b)
+    return VSLFit(b=float(best_b), vsl_target=target,
+                  vsl_achieved=float(best_sp["VSL"]),
+                  Lambda_h=float(best_sp["Lambda_h"]), V=float(best_sp["V"]),
+                  V_W=float(best_sp["V_W"]), V_h=float(best_sp["V_h"]),
+                  c_sub=subsistence_consumption(best_b),
+                  admissible=bool(chk["ok"]), iterations=it, scenario=scen)

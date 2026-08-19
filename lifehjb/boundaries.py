@@ -112,3 +112,90 @@ def compute(sol: Solution, params: Optional[Params] = None,
         W_star_now=w_star(sol, p.age0, p.h0), W_coast=coast, g_real=g_real,
         h0=p.h0, h_current_star=h_cur, W_now=p.W0,
     )
+
+
+# --------------------------------------------------------------------------- #
+# v3                                                                           #
+# --------------------------------------------------------------------------- #
+
+def w_star_v3(sol, age: float, h: float, state: Optional[int] = None) -> float:
+    """Free boundary under the v3 solution.
+
+    The stopping decision is read off the *preference ordering*: the agent stops
+    when ``retired`` is the top-ranked action, since retirement is always on
+    offer. That is the same test as v2's ``e* == retired``, expressed in the
+    ranking the v3 solver stores.
+    """
+    g = sol.grids
+    ri = sol.retired_action
+    i = int(sol.space.start_index() if state is None else state)
+    ti = int(np.clip(round(age - sol.params.age0), 0, sol.pol_rank.shape[0] - 1))
+    j = 0 if g.n_h == 1 else int(np.clip(round(np.interp(h, g.h, np.arange(g.n_h))),
+                                         0, g.n_h - 1))
+    top = sol.pol_rank[ti, i, :, j, 0]
+    working = np.nonzero(top != ri)[0]
+    if working.size == 0:
+        return float(g.W[0])
+    last = int(working[-1])
+    if last >= g.n_W - 1:
+        return float("inf")
+    return float(g.W[last + 1])
+
+
+def compute_v3(sol, params: Optional[Params] = None,
+               ages: Optional[Sequence[float]] = None,
+               state: Optional[int] = None) -> BoundaryReport:
+    """The three boundaries, read off a v3 solution."""
+    p = params or sol.params
+    sc = p.returns[sol.scenario]
+    g_real = sc.geometric_real_full_equity
+    h_cur = (H.h_star(p.seat("current350"), p.health)
+             if "current350" in p.seat_map else p.h0)
+    ages = list(ages) if ages is not None else list(range(int(p.age0), 71))
+
+    by_h0 = {int(a): w_star_v3(sol, float(a), p.h0, state) for a in ages}
+    by_hs = {int(a): w_star_v3(sol, float(a), h_cur, state) for a in ages}
+    coast = {int(a): w_coast(p, int(a), w_star_v3(sol, float(a), h_cur, state), g_real)
+             for a in p.coast_target_ages}
+
+    return BoundaryReport(
+        W_BATNA=w_batna(p), runway_years=p.runway_years,
+        annual_full_expenses=p.annual_full_expenses,
+        W_star_by_age_h0=by_h0, W_star_by_age_hstar=by_hs,
+        W_star_now=_first_finite_w_star(sol, p, state), W_coast=coast, g_real=g_real,
+        h0=p.h0, h_current_star=h_cur, W_now=p.W0)
+
+
+def _first_finite_w_star(sol, p: Params, state: Optional[int]) -> float:
+    """W* at the earliest age where stopping is actually on the table.
+
+    During the crunch lockout no seat change is permitted, so ``retired`` cannot
+    be top-ranked and W* is legitimately undefined. Reporting +inf there would be
+    correct but useless, so the boundary is quoted from the first age at which
+    the decision exists.
+    """
+    for k in range(0, sol.pol_rank.shape[0]):
+        v = w_star_v3(sol, p.age0 + k, p.h0, state)
+        if np.isfinite(v):
+            return v
+    return float("inf")
+
+
+def inaction_band_v3(sol_frictional, sol_frictionless, state: int, age: float) -> Dict[str, float]:
+    """Share of the (W, h) grid where friction changes the seat decision.
+
+    The band is where the frictionless policy would move but the frictional one
+    stays put -- the real-options region, and the formal explanation for staying
+    in a suboptimal seat.
+    """
+    ti = int(np.clip(round(age - sol_frictional.params.age0), 0,
+                     sol_frictional.pol_rank.shape[0] - 1))
+    cur = sol_frictional.space.states[state].seat
+    a_cur = sol_frictional.actions.index(cur) if cur in sol_frictional.actions else -1
+    stay = sol_frictional.pol_rank[ti, state, :, :, 0] == a_cur
+    free_moves = sol_frictionless.pol_rank[ti, state, :, :, 0] != a_cur
+    band = stay & free_moves
+    return dict(frac_stay=float(stay.mean()),
+                frac_frictionless_moves=float(free_moves.mean()),
+                frac_inaction_band=float(band.mean()),
+                band_mask=band)

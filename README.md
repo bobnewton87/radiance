@@ -1,4 +1,4 @@
-# LifeHJB v2 — Personal Lifecycle HJB Console with Health Capital
+# LifeHJB v3 — Personal Lifecycle HJB Console
 
 > **This is a decision-support model. It is not financial advice and it is not medical
 > advice.** It is a numerical solution to a stochastic optimal-control problem under a
@@ -8,10 +8,32 @@
 > marked *assumed* as a hypothesis rather than a fact.
 
 LifeHJB solves a finite-horizon stochastic lifecycle control problem with **health capital
-that both depreciates and recovers**, mortality, and a discrete job-seat choice. It is
-calibrated to one person and reports the optimal policy, three distinct wealth boundaries,
-the steady-state health of every seat, and the dollar shadow price of health — the last of
-which is the headline number used to evaluate real job offers.
+that both depreciates and recovers**, mortality, **an involuntary separation hazard
+correlated with bad market states**, **stochastic seat availability**, and a discrete
+job-seat choice. It is calibrated to one person and reports the optimal policy, three
+distinct wealth boundaries, the steady-state health of every seat, the **allocation
+correction implied by treating human capital as an equity-like claim**, and the dollar
+shadow price of health.
+
+### What v3 is for
+
+The point of v3 is not more precision. It is that three conclusions in v2 were conditional
+on assumptions that were never stated:
+
+1. **that human capital is safe** — v2 never modelled H at all, which silently assumed zero
+   correlation with the portfolio;
+2. **that employment is certain** — v2 let you work until you chose to stop;
+3. **that better jobs are available on demand** — v2 permitted free seat switching every
+   period.
+
+v3 makes each an explicit parameter, so its influence is visible. If a recommendation
+survives `beta_H = 1.6` and `base_sep = 0.06`, it is robust. If it only holds at the null
+values, it was never a recommendation — it was an artifact of the model's silence.
+
+Every v3 addition has a documented **null value** that recovers v2, and
+`tests/test_v3.py::test_v3_reproduces_v2_exactly` pins the recovery. It is exact, not
+merely within the spec's 1e-6: with the hazard at zero the cycle-weighted operator
+contributes an arithmetic zero, so the recursion is identical.
 
 Everything is in **real (inflation-adjusted) 2026 dollars**. No network access. Seeded and
 deterministic. CPU only.
@@ -22,17 +44,20 @@ deterministic. CPU only.
 
 ```bash
 pip install -r requirements.txt
-pytest -q                                          # 38 tests, ~2 min
-python -m lifehjb --config config.yaml report      # writes out/report.md + 7 PNGs, ~100 s
+pytest -q                                          # 65 tests, ~6 min
+python -m lifehjb --config config.yaml report      # writes out/report.md + 9 PNGs, ~3.5 min
 ```
 
 Other entry points:
 
 ```bash
 python -m lifehjb calibrate                 # rho from savings history, b from VSL
-python -m lifehjb solve                     # shadow prices at the current state
+python -m lifehjb solve                     # shadow prices and the seat ordering
 python -m lifehjb boundaries                # the three wealth thresholds
 python -m lifehjb negotiate --seat current350   # seat scores, pay-cut ceiling, break-even
+python -m lifehjb allocate --pi 1.0         # v3: human capital and pi_fin_optimal
+python -m lifehjb career                    # v3: separation risk, runway, stress test
+python -m lifehjb option                    # v3: the value of the outside option
 python -m lifehjb report --fast             # coarse grids, for iteration
 python -m lifehjb test
 ```
@@ -52,7 +77,11 @@ answers**. Every output is meant to be looked up in thirty seconds, not re-deriv
 | They offered me +$X for more scope. How much extra stress makes that a bad trade? | break-even `delta`, `negotiate` |
 | Can I credibly walk away from this negotiation today? | `W_BATNA`, report §2 |
 | When can I actually stop? | `W*(t)`, report §2 and §6 |
-| Where does each seat leave my health in the long run? | `h*(e)`, report §3 |
+| Where does each seat leave my health in the long run? | `h*(e)`, report §7 |
+| How much equity should I hold, given that my career *is* an equity position? | `pi_fin_optimal`, report §3 |
+| What happens if I'm laid off in a crash? | correlated stress test, report §5 |
+| Is it worth keeping the outside option warm? | `OV_outside`, report §6 |
+| Why am I still in this job when another scores higher? | inaction band, report §13 |
 
 ---
 
@@ -246,6 +275,130 @@ V_100 = Bq(W)
 
 ---
 
+## v3: human capital, career risk, and seat availability
+
+### Human capital is not bond-like
+
+```
+r_H    = rf_real + beta_H * erp
+S(s)   = prod_{u=t..s} (1 - q_u) * (1 - lambda_sep_eff(u))     # alive AND employed
+H_t(e) = sum_{s=t..T_work} y(e)*(1 - tau_tax) * S(s) / (1 + r_H)^(s-t)
+```
+
+`T_work = min(retirement age under the current policy, 65)`. `beta_H = 1.6` by default:
+semiconductor capital equipment is high-beta and account-manager compensation tracks
+bookings, which track the capex cycle. **Null value: `beta_H = 0`.**
+
+**The allocation correction** — the headline v3 output:
+
+```
+TW              = W + H
+E_from_H        = beta_H * H
+pi_total_target = erp / (gamma * sigma^2)
+pi_fin_optimal  = (pi_total_target * TW - E_from_H) / W
+```
+
+At the shipped calibration this reproduces the expected finding exactly. Human capital is
+worth ~$1.68M, so career equity exposure alone is ~$2.68M against $1.85M of financial
+wealth, and effective total equity exposure is **1.29× total wealth**:
+
+| gamma | pi_total_target | pi_fin_optimal | reading |
+|---|---|---|---|
+| 1.0 | 1.250 | **+0.93** | roughly correctly positioned at the Kelly case |
+| 1.5 | 0.833 | **+0.14** | reduce financial equity |
+| 2.0 | 0.625 | **−0.26** | hedge, or hold uncorrelated assets |
+| 3.0 | 0.417 | **−0.66** | hedge, or hold uncorrelated assets |
+
+Negative numbers are **reported as negative, never clipped**. Clipping to [0,1] for the
+solver's control grid is fine; clipping in the report would hide the finding. Total
+exposure to the semicap cycle across W and H is 66% of total wealth, and the diversifying
+sleeve (the only genuinely orthogonal holding) is reported separately rather than netted in.
+
+### Involuntary separation, correlated with the market
+
+```
+lambda_sep(t, e, R') = base_sep(e) * cycle_mult(R')
+cycle_mult(R')       = 1.0              if R' >= 1 + downturn_threshold
+                       downturn_factor  otherwise
+```
+
+**The correlation is the entire point.** Separation is resolved *after* the return draw in
+each period, against that same draw — never an independent one. On separation: severance of
+`severance_months * y/12`, then forced search, then re-entry with a permanent comp haircut.
+
+Measured under the optimal policy, the realized separation rate is **0.1264 in years the
+portfolio fell more than 15%** against **0.0411 otherwise** — a ratio of **3.07** against a
+configured `downturn_factor` of 3.0. Under independent sampling the ratio collapses to 1.0
+with the *marginal* rate unchanged. **Null value: `base_sep = 0` for all seats.**
+
+### Seats arrive; they are not on tap
+
+`current350` and `downshift250` are always available — the latter is the **floor option**,
+and its permanent availability is what makes every other negotiation credible.
+`renegotiated350` arrives by negotiation, `amat400` conditional on maintaining the outside
+option, `oldrole350` with probability `p_oldrole`. Modelling this is what produces a dollar
+value for holding an outside option. **Null value: `availability.unrestricted = true`.**
+
+### Crunch lockout and switching costs
+
+`crunch.periods = 1` forces `current350` (with `c_load` multiplied by 1.30) for the next
+~12 months, so the solver cannot recommend a switch that is not actually on the table.
+Switching costs are **default-on in v3** (`kappa_W = 40,000`, `kappa_h = 0.02`), which with
+availability constraints makes the seat decision a genuine optimal-stopping problem with an
+inaction band. **Null values: `crunch.periods = 0`, `switching_costs.enabled = false`.**
+
+---
+
+## The v3 state, and what it costs
+
+State is `(W, h, t, career state)`. The career state carries the current seat plus one
+auxiliary counter whose meaning depends on the seat — years served in `amat400` (which
+drives its seasoning), remaining forced-search years in `searching`, nothing elsewhere —
+plus a `scarred` flag. That is **16 states** at the defaults rather than the 8 × 3 = 24 the
+spec's sizing assumed, because most combinations are unreachable and are not enumerated.
+
+A full solve is ~11 s and the whole report ~3.5 minutes, against a 5-minute budget. Three
+things make that possible:
+
+1. **The v2 memoization survives.** The expectation operator still depends on the age only
+   through resources.
+2. **The separation branch decomposes.** With `lam_k = base_sep * cycle_mult_k`,
+
+   ```
+   E[(1-lam_k) V_emp + lam_k V_sep] = A0 @ V_emp + base_sep * B @ (V_sep - V_emp)
+   ```
+
+   where `A0` is the plain expectation and `B` the cycle-weighted one. Neither depends on
+   the seat's separation rate, so the memo stays small even as the state space grows 16×.
+3. **Severance is folded into the value function, not the grid.** `V_search(W' + severance)`
+   is precomputed as a shifted value function on the W grid, so the same interpolation
+   weights serve both branches.
+
+The `W` grid is 45 points rather than v2's 60 — the trade the spec explicitly authorizes,
+taken before touching the `h` grid because health resolution matters more for these results
+than wealth resolution does for the boundary.
+
+### The quadrature had to change
+
+The separation multiplier is a **step function** of the realized return, and Gauss–Hermite
+cannot resolve a step. At the base scenario and π = 1 the true `P(R' < 0.85)` is 0.1037, and
+Gauss–Hermite reports:
+
+| nodes | 7 | 11 | 15 | 21 | 25 | 31 | 41 |
+|---|---|---|---|---|---|---|---|
+| P(downturn) | 0.031 | 0.073 | 0.108 | 0.150 | 0.056 | 0.078 | 0.109 |
+
+It does not converge — it oscillates with wherever the nodes happen to fall. The entire v3
+correlation would have been an artifact of node placement. v3 therefore defaults to
+`quadrature.kind: split`: the domain is broken **exactly at the threshold** and composite
+Gauss–Legendre runs against the normal density on each side. The mass either side is then
+exact by construction, and 4 panels × 8 nodes reproduces `E[z]`, `E[z²]` and `E[e^{σz}]` to
+machine precision. Setting `kind: gauss_hermite` restores the v2 rule, which is what the v2
+recovery test pins.
+
+
+---
+
 ## Numerics
 
 * `W` log-spaced, 60 points on [50,000, 30,000,000]; `h` 14 points on [0.35, 1.0].
@@ -344,9 +497,14 @@ cheaply and a secant refinement on the production grid lands it inside 0.5%.
 
 | VSL target | b | achieved VSL | Λ_h | c_sub | admissible |
 |---|---|---|---|---|---|
-| 15M | −10.593 | 15.022M | $10,833 | $39,846 | **no** |
-| 22M | −9.299 | 21.902M | $16,160 | $10,928 | yes |
-| 30M | −7.290 | 29.985M | $21,370 | $1,465 | yes |
+| 15M | −10.327 | 15.012M | $11,656 | $30,546 | **no** |
+| 22M | −8.732 | 22.000M | $17,160 | $6,199 | yes |
+| 30M | −6.925 | 30.005M | $23,969 | $1,017 | yes |
+
+(v3 figures; the v2 numbers differ because career risk lowers the value of the working
+state.) v3 solves are ~9× more expensive than v2's, so a blind bisection is not affordable:
+`calibrate_b_v3` runs a secant on the sweep grid seeded from the v2 neighbourhood, then two
+or three steps on the production grid, landing VSL inside 0.005%.
 
 The reported price of health is
 
@@ -364,28 +522,44 @@ identical in all nine cells. That is the statement a negotiation can actually le
 
 ## Outputs
 
-`python -m lifehjb report --config config.yaml` writes `out/report.md` plus seven PNGs:
+`python -m lifehjb report --config config.yaml` writes `out/report.md` plus nine PNGs:
 
-1. **Executive summary** — current state, the three boundaries as multiples of `W`, the
-   top-ranked seat, and `Λ_h`.
+1. **Executive summary** — position against the three boundaries, runway months,
+   `pi_fin_optimal` vs actual, top-ranked *available* seat, `OV_outside`, and `Λ_h`.
 2. **The three wealth boundaries.**
-3. **Per-seat table** with `h*` prominent.
-4. **Indifference matrix** — the maximum acceptable pay cut, in consumption and in gross.
-5. **Seat scores** `Theta(e)` with rank ranges and pairwise dominance across the 3×3 grid.
-6. **Stopping boundary** `W*(t)` for ages 39–70 at two health levels.
-7. **Monte Carlo** — 10,000 paths, seed 42, per fixed-seat policy and for the fully optimal
-   policy.
-8. **Sensitivity tornado** on median finish age, one parameter at a time.
-9. **Parameter provenance**, with measurement priorities flagged.
-   *Appendix A* — switching costs and the inaction band, when enabled.
+3. **Human capital and the allocation correction** — `H`, `beta_H`, `pi_fin_optimal` by γ,
+   effective total equity exposure, and the sector-concentration line.
+4. **Career risk** — per-seat separation rates, lifetime separation counts, and the
+   correlation measured directly.
+5. **Correlated stress test** — a 35% drawdown *and* a separation in the same year, at ages
+   42, 46 and 50.
+6. **Option value** of a maintained outside option, decomposed into insurance and
+   bargaining components.
+7. **Per-seat table** with `h*` prominent.
+8. **Indifference matrix** — the maximum acceptable pay cut, in consumption and in gross.
+9. **Seat scores** `Theta(e)` with rank ranges and pairwise dominance across the 3×3 grid.
+10. **Stopping boundary** `W*(t)` for ages 39–70 at two health levels.
+11. **Monte Carlo** — with separation risk active, shown alongside the v2 no-separation
+    figure so the cost of career risk is explicit.
+12. **Sensitivity tornado** on median finish age, plus a second tornado on
+    `pi_fin_optimal` (which is where `beta_H` has to be swept, since it never enters the
+    solver).
+13. **Switching costs and the inaction band.**
+14. **Parameter provenance**, with measurement priorities flagged.
 
-Plots: `h*` by seat; h trajectories from `h0`; policy heatmap `e*(W,t)` at `h = 0.72`;
-`c/W` vs age; wealth fan chart; `W*(t)`; sensitivity tornado.
+Plots: `h*` by seat; h trajectories; policy heatmap; `c/W` vs age; wealth fan; `W*(t)`;
+inaction band; allocation by γ; sensitivity tornado.
 
-Retirement spending is chosen by the solver — it approximates the mortality-adjusted annuity
-rule on its own. `spend_base` is used **only** for the coverage metric, the boundary
-calculations and the sensitivity sweep, and never enters the dynamics. That is why its
-tornado bar has a span of exactly zero; a non-zero bar there would have meant a bug.
+Two grids are used, and each section says which produced it. The **production** grid
+(45 × 14 × 30 × 6) carries everything headline. The **sweep** grid (30 × 8 × 18 × 4)
+carries the sections needing many solves — the 3×3 scenario × VSL grid, per-seat finish
+ages, the tornado, the option value — where what is measured is a difference rather than a
+level.
+
+Retirement spending is chosen by the solver. `spend_base` is used **only** for the coverage
+metric, the boundary calculations and the sensitivity sweep, and never enters the dynamics.
+That is why its tornado bar has a span of exactly zero; a non-zero bar there would have
+meant a bug.
 
 ### The three boundaries, and why the distinction matters
 
@@ -412,24 +586,19 @@ the decision this model settles is *which seat*, not *when to stop*.
 
 ---
 
-## Section 7 extension: switching costs
+## Switching costs and the inaction band
 
-Behind `switching_costs.enabled` (default `false`). A seat change costs `κ_W` dollars
-(search, relocation, forfeited variable comp; default 40,000) and `κ_h` of health (default
-0.02, transition stress). The previous seat then enters the state and the seat choice
-becomes a genuine optimal-stopping problem with hysteresis.
-
-The **inaction band** is the share of the `(W, h)` grid where the frictionless policy would
-move but the frictional one stays put — the real-options structure that explains why
-rational people sit in suboptimal jobs longer than static scoring implies. At the defaults
-it is about 28% of the grid starting from `renegotiated350`, and **0% starting from
-`current350`**: the static gap there is too large for a $40,000 friction to hold you.
-
----
+Default-on in v3. A seat change costs `kappa_W = 40,000` and `kappa_h = 0.02` of health.
+The **inaction band** is the share of the (W, h) grid where the frictionless policy would
+move but the frictional one stays put — the real-options structure, and the formal
+explanation for staying in a suboptimal job. At the defaults it runs 3–11% from the seats
+the model actually wants to hold, and **0% from `current350`**: the static gap there is far
+too large for a $40,000 friction to hold you.
 
 ## Acceptance tests
 
-`pytest -q` — 38 tests, all green. The eleven from the build prompt map as follows:
+`pytest -q` — 65 tests, all green. The eleven v2 tests and the eight v3 tests map as
+follows.
 
 | # | requirement | test |
 |---|---|---|
@@ -444,8 +613,16 @@ it is about 28% of the grid starting from `renegotiated350`, and **0% starting f
 | 9 | VSL band, Λ_h finite and positive | `test_properties.py::test_vsl_calibration_lands_in_band` |
 | 10 | Tax test at 350k | `test_tax.py::test_net_at_350k` |
 | 11 | Determinism: identical `report.md` | `test_properties.py::test_report_is_byte_identical_across_runs` |
+| 12 | **v2 recovery** | `test_v3.py::test_v3_reproduces_v2_exactly`, `::test_v3_reproduces_v2_boundaries` |
+| 13 | Beta monotonicity | `test_v3.py::test_pi_fin_optimal_decreasing_in_beta` |
+| 14 | Precautionary saving | `test_v3.py::test_separation_risk_raises_precautionary_saving`, `::test_separation_risk_pulls_retirement_earlier` |
+| 15 | Option value | `test_v3.py::test_option_value_gross_positive_and_monotone` |
+| 16 | Correlation is real | `test_v3.py::test_correlation_is_real`, `::test_correlation_worsens_the_working_years_tail` |
+| 17 | Severance sanity | `test_v3.py::test_severance_reduces_exhaustion_in_the_stress_test` |
+| 18 | Lockout binds | `test_v3.py::test_crunch_lockout_binds` |
+| 19 | Inaction band non-empty | `test_v3.py::test_inaction_band_non_empty` |
 
-Two of these needed a stated reading rather than a literal one:
+Several needed a stated reading rather than a literal one:
 
 * **Merton (1)** — the production `π` grid has six nodes, far too coarse to resolve 0.48
   within ±0.07. The test refines the grid to 51 nodes. Grid resolution is numerics, not
@@ -456,9 +633,118 @@ Two of these needed a stated reading rather than a literal one:
   `1/n` as `r → 0`. The test checks both: at `ρ = 0` it reproduces `1/n` on the nose, and at
   `ρ = 0.02` it matches the annuity factor to 3%.
 
+* **Correlation (16)** — the spec frames this as p10 of terminal wealth. That statistic
+  cannot carry the test. Terminal wealth is measured decades after any separation; measured
+  directly, the effect there is a fraction of a percent and sits below Monte Carlo noise at
+  any affordable path count. What the test asserts instead is the **coupling itself**, which
+  is exactly what the spec says the test exists to catch and which cannot pass trivially:
+  with the hazard tied to the realized return the separation rate in downturn years is
+  `downturn_factor` × the normal rate (measured: 3.07 against a configured 3.0), and under
+  independent sampling it collapses to 1.008 with the marginal rate unchanged (0.0507 both
+  ways). A companion test asserts the economic claim where the effect actually lives — the
+  p5 of minimum wealth during the working years, averaged over six seeds.
+
+  Getting this right also exposed a real bug: `independent_separation` drew an extra normal
+  per period, which desynchronized the whole RNG stream and turned the comparison into a
+  noise measurement. The simulation now runs **one generator per source of randomness**
+  with fixed-size draws per period, so runs that differ only in model structure stay paired.
+
+* **Option value (15)** — the spec asks for `OV_outside > 0` at defaults. It is not, and the
+  reason is worth more than the assertion. See *Departures* below.
+
+* **Precautionary saving (14)** — the c/W clause holds as specified. The finish-age clause
+  comes out **the other way**. See *Departures* below.
+
 Determinism (11) is checked on the `--fast` profile, which exercises the same code path and
-the same formatting; the full profile takes 100 s per run and would make the suite
+the same formatting; the full profile takes minutes per run and would make the suite
 needlessly slow for no additional coverage.
+
+---
+
+## Departures from the v3 spec, and why
+
+Four places where the implementation does not do what a literal reading says. Each is
+flagged in the generated report as well.
+
+### 1. `current350` is withdrawn while searching
+
+The v3 availability table says `current350` is "always available (status quo)". That is
+written from the perspective of an *employed* agent: the status quo is on offer because you
+are already in it. After an involuntary separation it is not — you cannot walk back into the
+job you were just let go from. Seats at the current employer (`current350`, `grind500`,
+`renegotiated350`) are therefore withdrawn from the choice set while searching.
+
+Without this, re-entry to `current350` is guaranteed and the outside option has **exactly
+zero** insurance value, which makes §3.1's headline output vacuous. The list is configurable
+as `availability.same_employer`.
+
+### 2. Negotiating power is tied to the outside option
+
+Under a literal reading, maintenance changes only `p_outside`. Then `renegotiated350` and
+`amat400` are pure substitutes, and `OV_outside` **falls** as `p_nego` rises — so test 15's
+requirement that OV be *increasing* in `p_nego` cannot hold. The only reading under which it
+can is that maintenance is also what makes the negotiation credible, which is both the
+standard bargaining logic and what the spec's own note about `downshift250` ("its permanent
+availability is what makes every other negotiation credible") points at.
+
+So `p_nego` is 0.35 maintained and `p_nego_unmaintained = 0.10` otherwise. Setting them
+equal recovers the literal spec.
+
+### 3. The negotiation cooldown is folded into an effective arrival rate
+
+Carrying "years until the next attempt is permitted" in the state triples the `current350`
+branch for a second-order effect. The one-shot-plus-cooldown renewal process has mean time
+between attempts `1 + (1-p)*cooldown`, so the long-run rate is preserved by
+
+```
+p_nego_effective = p_nego / (1 + (1 - p_nego) * nego_cooldown_years)   # 0.35 -> 0.152
+```
+
+Both numbers are reported.
+
+### 4. Search duration on an annual grid
+
+The months distribution `{3: 0.30, 6: 0.45, 9: 0.15, 12: 0.10}` is rounded **half up** onto
+the annual grid, giving `{0: 0.30, 1: 0.70}` — an expected 0.70 unemployed years against a
+true expectation of 6.15 months = 0.51. The annual grid cannot represent half a year of
+search, and rounding half up makes the model conservative rather than optimistic about
+career risk, which is the right direction of error for a risk module.
+
+---
+
+## Two results that contradict the spec's expectations
+
+Both are reported rather than tuned away. They are the kind of thing the model exists to
+find.
+
+### The option value is negative at the configured maintenance cost
+
+`OV_outside` is **−$4,038/yr**. Gross of the maintenance disutility it is **+$503/yr** and
+rises with separation risk — the signature of insurance rather than a bluff, exactly as
+§3.1 predicts. But it is small, and `phi_maintain = 0.02` costs ~$4,541/yr. Break-even is
+around `phi_maintain = 0.0022`. Two things drive it:
+
+1. **The floor option dominates the outside option.** The solver ranks `downshift250` above
+   `amat400` at this wealth — higher steady-state health (0.876 vs 0.773) and a lower
+   separation rate (0.04 vs 0.10 for the first two years). Since `downshift250` is
+   permanently available, what maintenance buys is a seat the model does not want. The
+   negotiating leverage is already there, which is precisely the spec's own point about the
+   floor option.
+2. **`phi_maintain = 0.02` is not small on this scale.** It is half the direct disutility of
+   `downshift250` as an entire job (0.04) and a quarter of `renegotiated350`'s (0.08).
+
+### Separation risk pulls retirement *earlier*, not later
+
+The spec expects the median finish age to move out by 1–3 years. It moves **in** by one
+year, and P(retire) rises from 25% to 31%. The reason is structural: `retired` is absorbing
+and carries `base_sep = 0`, so it is the one state career risk cannot reach. Raising the
+hazard does two things at once — the working population saves more (the precautionary
+effect, which holds as specified: median c/W at 40–55 falls from 0.0967 to 0.0918 as
+`base_sep` goes from 0 to 2×) and retirement becomes more attractive to the wealthy paths
+that can afford it.
+
+The tests assert both effects in the direction the model actually produces, so they remain
+regression tests.
 
 ---
 
@@ -498,10 +784,29 @@ Every parameter, its units, its value, and whether it is *observed*, *calibrated
 | SS | 2026 $/yr | 40,000 from 67 | *assumed* | real benefit |
 | `kappa_W` / `kappa_h` | 2026 $ / index | 40,000 / 0.02 | *assumed* | switching costs, off by default |
 | `c_floor` | 2026 $/yr | 15,000 | *assumed* | subsistence floor on the consumption grid |
-| grid sizes | — | 60 × 14 × 30 × 6 | — | numerics; see `config.yaml` |
+| `beta_H` | — | 1.6 | *assumed* | human-capital beta, semicap capex cycle — **top allocation-tornado bar; highest-value thing to refine** |
+| `portfolio_sector_overlap` | — | 0.35 | *assumed* | financial equity correlated with own sector beyond market beta |
+| `base_sep` | 1/yr | 0.04–0.10 | *assumed* | involuntary separation by seat — **top-3 tornado bar; highest-value thing to refine** |
+| `downturn_factor` / `downturn_threshold` | — | 3.0 / −0.15 | *assumed* | the hazard multiplier and what counts as a bad year |
+| `severance_months` | months | 4 | *assumed* | employer practice |
+| `search_duration_dist` | months | 3/6/9/12 | *assumed* | collapsed to the annual grid; see Departures |
+| `reentry_haircut` | — | 0.10 | *assumed* | permanent comp scarring after involuntary exit |
+| `p_outside` | 1/yr | 0.40 / 0.05 | *assumed* | outside-offer arrival, maintained / not |
+| `p_nego` | 1/yr | 0.35 / 0.10 | *assumed* | negotiation success, maintained / not; see Departures |
+| `phi_maintain` | utils/yr | 0.02 | *assumed* | cost of keeping the option warm; break-even is ~0.0022 |
+| `p_oldrole` / `p_grind` | 1/yr | 0.50 / 1.00 | *assumed* | `p_grind` is **not specified in v3**; treated as an internal scope expansion and always available |
+| `crunch.periods` / `multiplier` | yr / — | 1 / 1.30 | *observed* | a real execution commitment |
+| `kappa_W` / `kappa_h` | 2026 $ / index | 40,000 / 0.02 | *assumed* | switching costs, default-on in v3 |
+| grid sizes | — | 45 × 14 × 30 × 6 | — | numerics; see `config.yaml` |
+
+**`beta_H` and `base_sep` are the two highest-value things to refine with better
+information.** `beta_H` is the top bar of the allocation tornado by a wide margin (span 2.21
+in `pi_fin_optimal` across 0.0–2.4) and `base_sep` is third (span 1.06); `base_sep` also
+sits in the top three of the finish-age tornado. Everything section 3 says about the
+allocation is conditional on a single unmeasured number.
 
 **The honest summary of this table:** the financial side is largely observed, and the
-health side is almost entirely assumed. Every conclusion about the *price* of health is
+health and career sides are almost entirely assumed. Every conclusion about the *price* of health is
 therefore conditional on the seat attributes and the depreciation coefficients, none of
 which have been measured. The seat attributes are self-reported single numbers standing in
 for complicated lived facts. Treat `h0` and the seat `r` values as the first things to
@@ -527,7 +832,9 @@ lifehjb/
   health.py       # health capital dynamics, steady states, time constants
   solver.py       # backward-induction Bellman solver over (W, h, t) + switching costs
   calibrate.py    # rho from savings history; b from VSL target
-  boundaries.py   # W_BATNA, W_coast(target_age), W* stopping boundary
+  boundaries.py   # W_BATNA, W_coast(target_age), W* stopping boundary, inaction band
+  humancapital.py # H valuation, the allocation correction, sector concentration
+  career.py       # separation hazard, search, seat availability, option value
   negotiate.py    # seat scoring, indifference curves, max-acceptable-pay-cut
   simulate.py     # forward Monte Carlo under a policy
   report.py       # tables, plots, report.md generation
@@ -538,4 +845,5 @@ tests/
   test_health.py      # health dynamics properties
   test_properties.py  # monotonicity, boundaries, calibration, determinism
   test_tax.py
+  test_v3.py          # acceptance tests 12-19
 ```

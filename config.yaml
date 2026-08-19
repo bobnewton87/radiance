@@ -28,7 +28,7 @@ returns:
   bull: {rf_real: 0.020, erp: 0.055, sigma: 0.16}
 
 ss: {enabled: true, amount: 40_000, age: 67}
-switching_costs: {enabled: false, kappa_W: 40_000, kappa_h: 0.02}
+switching_costs: {enabled: true, kappa_W: 40_000, kappa_h: 0.02}   # v3: default ON
 boundaries: {runway_years: 3, coast_target_ages: [49, 52, 55, 57, 60]}
 mc: {paths: 10_000, seed: 42}
 
@@ -41,11 +41,63 @@ seats:
   - {id: downshift250,    y: 250_000, c_load: 0.35, travel: 0.10, autonomy: 0.75, r: 0.80, phi: 0.04, note: "lower pay, low load"}
   - {id: retired,         y: 0,       c_load: 0.05, travel: 0.02, autonomy: 0.95, r: 0.92, phi: 0.00, absorbing: true, note: "absorbing"}
 
+# --------------------------------------------------------------------------- #
+# v3 additions                                                                  #
+# --------------------------------------------------------------------------- #
+
+human_capital:
+  beta_H: 1.6                  # semicap capex cycle; set 0 to recover v2
+  portfolio_sector_overlap: 0.35
+  gammas_reported: [1.0, 1.5, 2.0, 3.0]
+  T_work_cap: 65
+  diversifying_sleeve: 0.0
+
+career:
+  base_sep:                    # annual involuntary separation probability
+    grind500: 0.06             # high visibility, high comp, cut-list exposure
+    current350: 0.06           # no internal sponsor, unfriendly chain
+    oldrole350: 0.05
+    renegotiated350: 0.05      # documented structure provides some protection
+    amat400: 0.10              # first 2 years; 0.05 thereafter (last-in-first-out)
+    downshift250: 0.04         # lower comp, lower cut-list salience
+    retired: 0.0
+  amat_seasoning_years: 2
+  amat_sep_after: 0.05
+  downturn_threshold: -0.15
+  downturn_factor: 3.0
+  severance_months: 4
+  search_duration_dist: {3: 0.30, 6: 0.45, 9: 0.15, 12: 0.10}   # months
+  reentry_haircut: 0.10
+  searching_seat: {c_load: 0.45, travel: 0.05, autonomy: 0.30, r: 0.55, phi: 0.35}
+
+availability:
+  p_nego: 0.35
+  nego_cooldown_years: 2
+  p_outside: 0.40              # conditional on maintenance
+  p_outside_unmaintained: 0.05
+  phi_maintain: 0.02
+  p_oldrole: 0.50
+  p_grind: 1.0                 # not specified in v3; internal scope expansion
+  maintain_outside_option: true
+
+crunch:
+  periods: 1
+  multiplier: 1.30
+
+stress_test:
+  drawdown: -0.35
+  ages: [42, 46, 50]
+
+# Return-expectation quadrature. `split` breaks the domain at the downturn
+# threshold so P(downturn) is exact; `gauss_hermite` is the v2 rule and cannot
+# resolve a step function. See README.
+quadrature: {kind: split, panels: 4, m: 8, z_max: 8.5}
+
 # Numerical grids. Not economics -- but c_floor is the one entry that carries an
 # economic reading: it is the subsistence consumption below which the model
 # refuses to price health. See README, "The felicity floor".
 numerics:
-  n_W: 60
+  n_W: 45                     # v3: traded down from 60 for the expanded state space
   W_min: 50_000
   W_max: 30_000_000
   n_h: 14
