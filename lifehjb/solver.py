@@ -698,7 +698,7 @@ class SolutionV3:
 
     @property
     def retired_action(self) -> int:
-        return self.actions.index(_C.RETIRED_ACTION)
+        return self.actions.index(self.space.retired_id)
 
     @property
     def search_action(self) -> int:
@@ -882,7 +882,7 @@ def solve_v3(params: Params, scenario: Optional[str] = None,
                 hit = cache.get(key)
                 if hit is None:
                     seat = space.seat_for(seat_id, scarred=scarred, crunch=crunch)
-                    extra = 0.0 if seat_id == _C.RETIRED_ACTION else phi_maintain
+                    extra = 0.0 if space.is_absorbing(seat_id) else phi_maintain
                     hit = evaluate(seat, target, switched, base_sep, age, ti, Vn,
                                    V_sep_mix, extra)
                     cache[key] = hit

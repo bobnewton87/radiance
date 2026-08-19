@@ -26,7 +26,7 @@ import numpy as np
 from .model import (AvailabilityParams, CareerParams, CrunchParams, Params, Seat)
 
 SEARCHING = "searching"
-RETIRED_ACTION = "retired"
+RETIRED_ACTION = "retired"     # conventional id; code keys off `absorbing`
 NO_STATE = -1          # sentinel: transition lands in the absorbing retired value fn
 
 
@@ -132,6 +132,7 @@ class CareerSpace:
         self.base_seats = base
         self.work_seats = [s for s in base if not s.absorbing]
         self.retired = next(s for s in base if s.absorbing)
+        self.retired_id = self.retired.id
         self.search_seat = searching_seat(self.cp)
 
         self.max_search = max(search_year_distribution(self.cp)) if self.cp.enabled else 0
@@ -174,6 +175,9 @@ class CareerSpace:
         return s
 
     # -- structure -------------------------------------------------------- #
+    def is_absorbing(self, seat_id: str) -> bool:
+        return seat_id == self.retired_id
+
     def is_forced_search(self, i: int) -> bool:
         st = self.states[i]
         return st.seat == SEARCHING and st.aux > 0
@@ -245,7 +249,7 @@ class CareerSpace:
     def target(self, i: int, seat_id: str) -> int:
         """State index entered by choosing *seat_id* from state *i*."""
         st = self.states[i]
-        if seat_id == RETIRED_ACTION:
+        if seat_id == self.retired_id:
             return NO_STATE
         if seat_id == SEARCHING:
             return self.idx[CState(SEARCHING, max(st.aux - 1, 0), True)]

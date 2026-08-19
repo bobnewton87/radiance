@@ -275,12 +275,12 @@ def simulate_v3(sol: SolutionV3, params: Optional[Params] = None,
 
     # income / severance lookups, per (action, scarred, crunch)
     def _net(seat_id, scarred, crunch):
-        if seat_id == _C.RETIRED_ACTION:
+        if space.is_absorbing(seat_id):
             return 0.0
         return seat_net_income(space.seat_for(seat_id, scarred, crunch), p)
 
     def _sev(seat_id, scarred, crunch):
-        if seat_id in (_C.RETIRED_ACTION, _C.SEARCHING):
+        if space.is_absorbing(seat_id) or seat_id == _C.SEARCHING:
             return 0.0
         return _C.severance_amount(space.seat_for(seat_id, scarred, crunch), cp)
 

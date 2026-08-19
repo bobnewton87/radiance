@@ -75,8 +75,9 @@ answers**. Every output is meant to be looked up in thirty seconds, not re-deriv
 | Which seat is best, and by how much in dollars? | seat score `Theta(e)`, report §5 |
 | What is the largest pay cut worth taking for a less punishing seat? | indifference matrix, report §4 |
 | They offered me +$X for more scope. How much extra stress makes that a bad trade? | break-even `delta`, `negotiate` |
-| Can I credibly walk away from this negotiation today? | `W_BATNA`, report §2 |
-| When can I actually stop? | `W*(t)`, report §2 and §6 |
+| Can I credibly walk away from this negotiation today? | walk-away money, report §2 |
+| **How much money is actually enough?** | **freedom number, report §2** |
+| When would the model choose to stop earning? | stop-working number `W*(t)`, report §2 and §10 |
 | Where does each seat leave my health in the long run? | `h*(e)`, report §7 |
 | How much equity should I hold, given that my career *is* an equity position? | `pi_fin_optimal`, report §3 |
 | What happens if I'm laid off in a crash? | correlated stress test, report §5 |
@@ -546,6 +547,12 @@ identical in all nine cells. That is the statement a negotiation can actually le
     solver).
 13. **Switching costs and the inaction band.**
 14. **Parameter provenance**, with measurement priorities flagged.
+15. **Glossary** — every symbol in the report, in English.
+
+The report is written to be read by the person it is about, not by the person who wrote the
+model: sections have plain-English titles, every table says how to read it, and the summary
+answers the actual questions in sentences. Symbols are kept where they are load-bearing and
+defined in §15.
 
 Plots: `h*` by seat; h trajectories; policy heatmap; `c/W` vs age; wealth fan; `W*(t)`;
 inaction band; allocation by γ; sensitivity tornado.
@@ -563,6 +570,12 @@ meant a bug.
 
 ### The three boundaries, and why the distinction matters
 
+0. **The freedom number** — the wealth that funds `spend_base` for life with 95%
+   confidence, computed by Monte Carlo with no labour income (`boundaries.funded_wealth`).
+   At 60% equities that is **$5.80M** (a 2.9% withdrawal rate); $6M gives 96% for life and
+   92% even to age 100. **This is the retirement number**, and it is the one the report
+   leads with.
+
 1. **`W_BATNA`** — credible-walk-away wealth, `runway_years × annual_full_expenses`. At
    3 years × $168,799 that is **$506,397**, already covered 3.7× over. This is the number
    that makes an outside option credible in a negotiation, and it is *much* lower than the
@@ -575,6 +588,43 @@ meant a bug.
 
 They must satisfy `W_BATNA < W_coast(60) < W_coast(49) < W*`, which
 `tests/test_properties.py::test_boundary_ordering` asserts.
+
+### W\* is not the retirement number, and the report says so
+
+`W*` ≈ **$14.5M**, against a freedom number of **$5.8M**. That gap is the single most
+misread output in the model, so the report decomposes it rather than restating it:
+
+| what changes | W\* becomes |
+|---|---|
+| as shipped | $14.5M |
+| if stopping were reversible | $10.8M |
+| if a life were worth $15M (not $22M) | $22.4M |
+| if a life were worth $30M (not $22M) | $10.8M |
+
+Impatience barely moves it (`rho` at 8% still leaves $9.4M) and the bequest motive does not
+move it at all. Three things do:
+
+1. **Retirement is absorbing**, per the v2 spec. Stopping at 39 forfeits sixty years of
+   *optional* income and the option is expensive. Making it reversible costs ~25%.
+2. **The VSL calibration** swings it about 2×, because it sets how big a prize better
+   health is.
+3. **Log utility has no satiation**, and this is the real driver. Doubling consumption is
+   worth the same whether you go from $150k to $300k or $1.5M to $3M, so another $270k of
+   income never stops being attractive — it only becomes slowly less attractive as
+   spending rises. The model has no concept of "enough".
+
+Inverting the calibration: for the model to stop at $6M it would need to value a
+statistical life around **$45M** rather than $22M. That is the honest answer to "why isn't
+$6M enough for it?" — it is not an arithmetic disagreement, it is a disagreement about how
+much health is worth, plus a utility function with no saturation point.
+
+**The single most valuable extension** would be CRRA felicity with `gamma > 1`, which is
+what actually encodes diminishing returns to spending. It is not implemented because
+calibrating `b` to a VSL target becomes badly ill-conditioned for `gamma > 1` — the
+intercept is forced to within ~1e-5 of `-1/(gamma-1)` — and it needs a different
+calibration anchor (matching `Lambda_h` in dollars rather than `VSL`) to be numerically
+sound. Note also that the allocation section already reports `gamma ∈ {1, 1.5, 2, 3}` while
+the solver assumes `gamma = 1`; those two are not currently consistent with each other.
 
 ### Reading the Monte Carlo honestly
 

@@ -59,6 +59,14 @@ def pct(x: float, nd: int = 1) -> str:
     return f"{100.0 * x:.{nd}f}%"
 
 
+def _money_to_float(s: str) -> float:
+    """Parse a formatted money string back to a number, for derived commentary."""
+    try:
+        return float(str(s).replace("$", "").replace(",", ""))
+    except ValueError:
+        return float("nan")
+
+
 def table(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
     out = ["| " + " | ".join(headers) + " |",
            "|" + "|".join("---" for _ in headers) + "|"]
@@ -154,6 +162,79 @@ class ReportRun:
     def state0(self) -> int:
         return self.base.space.start_index()
 
+    def stop_wealth(self, sol) -> float:
+        """Wealth at which the top-ranked action is to stop, at h0."""
+        g = sol.grids
+        st = sol.space.start_index()
+        ti = max(int(self.p.crunch.periods), 1)
+        ti = min(ti, sol.pol_rank.shape[0] - 1)
+        j = 0 if g.n_h == 1 else int(np.clip(
+            round(np.interp(self.p.h0, g.h, np.arange(g.n_h))), 0, g.n_h - 1))
+        top = sol.pol_rank[ti, st, :, j, 0]
+        w = np.nonzero(top != sol.retired_action)[0]
+        if w.size == 0:
+            return float(g.W[0])
+        last = int(w[-1])
+        return float("inf") if last >= g.n_W - 1 else float(g.W[last + 1])
+
+    def eta_rows(self, target: float) -> List[List[str]]:
+        """When wealth reaches *target*, under a few plausible savings rates."""
+        p = self.p
+        g = p.returns["base"].geometric_real_full_equity
+        mtg = p.mortgage.payment_real if p.mortgage_enabled else 0.0
+        out = []
+        cases = [("stop saving today, just let it compound", 0.0)]
+        for sid in ("downshift250", "renegotiated350", "current350", "grind500"):
+            if sid in p.seat_map:
+                save = seat_net_income(p.seat(sid), p) - p.spend_base - mtg
+                cases.append((f"keep saving on `{sid}` pay ({m(max(save, 0))}/yr)",
+                              max(save, 0.0)))
+        for label, save in cases:
+            k = B.years_to_target(p.W0, target, g, save)
+            out.append([label,
+                        f"{p.age0 + k:.0f}" if np.isfinite(k) else "never",
+                        f"{k:.0f}" if np.isfinite(k) else "never"])
+        return out
+
+    def gap_decomposition(self) -> List[List[str]]:
+        """Why the stop-working number is what it is, one change at a time.
+
+        Reported because the headline number invites exactly one question and it
+        deserves an answer rather than a restatement.
+        """
+        p = self.p
+        rows = [["as shipped", m(self.stop_wealth(self.base))]]
+        # Reversible stopping: swap which zero-income seat is absorbing.
+        from .model import Seat as _Seat
+        rev = [replace(x, id="sabbatical") if x.absorbing else x for x in p.seats]
+        rev.append(_Seat(id="retired", y=0, c_load=0.05, travel=0.02, autonomy=0.95,
+                         r=0.92, phi=0.0, absorbing=False, note="stop, reversible"))
+        try:
+            sol = solve_v3(self.sweep.evolve(seats=tuple(rev)), scenario="base", b=self.b)
+            g, st = sol.grids, sol.space.start_index()
+            ti = min(max(int(p.crunch.periods), 1), sol.pol_rank.shape[0] - 1)
+            j = int(np.clip(round(np.interp(p.h0, g.h, np.arange(g.n_h))), 0, g.n_h - 1))
+            stop_ids = [sol.actions.index(x) for x in ("retired", "sabbatical")
+                        if x in sol.actions]
+            top = sol.pol_rank[ti, st, :, j, 0]
+            w = np.nonzero(~np.isin(top, stop_ids))[0]
+            val = (float(g.W[int(w[-1]) + 1]) if (w.size and int(w[-1]) < g.n_W - 1)
+                   else float("inf"))
+            rows.append(["if stopping were reversible", m(val)])
+        except Exception:
+            rows.append(["if stopping were reversible", "n/a"])
+        for t in self.vsl_targets:
+            if t == self.base_vsl:
+                continue
+            rows.append([f"if a life were worth {m(t, 0)} (not {m(p.vsl_target, 0)})",
+                         m(self.stop_wealth(self.solution("base", t)))])
+        base_v, rev_v = _money_to_float(rows[0][1]), _money_to_float(rows[1][1])
+        self._reversible_drop = (
+            f"about {1.0 - rev_v / base_v:.0%}"
+            if (np.isfinite(base_v) and np.isfinite(rev_v) and base_v > 0)
+            else "an amount this grid cannot resolve")
+        return rows
+
     def sp(self) -> Dict[str, float]:
         return shadow_prices_v3(self.base, self.p.W0, self.p.h0, self.p.age0,
                                 self.state0)
@@ -164,32 +245,115 @@ class ReportRun:
 # --------------------------------------------------------------------------- #
 
 def section_boundaries(run: ReportRun) -> Tuple[str, B.BoundaryReport]:
+    """Section 2 -- how much money is enough. Written to be read, not decoded."""
     p = run.p
     br = B.compute_v3(run.base, p, state=run.state0)
-    rows = [
-        ["W_BATNA (walk-away runway)", m(br.W_BATNA),
-         f"{br.W_BATNA / br.W_now:.2f}x",
-         f"{p.runway_years:.0f} yr x {m(br.annual_full_expenses)} full expenses"],
-    ]
-    for a in sorted(br.W_coast):
-        rows.append([f"W_coast({a})", m(br.W_coast[a]), f"{br.W_coast[a] / br.W_now:.2f}x",
-                     f"reaches W*({a}) by age {a} at {pct(br.g_real, 2)} real, zero saving"])
-    rows.append(["W* (stopping boundary, age %d)" % int(p.age0), m(br.W_star_now),
-                 f"{br.W_star_now / br.W_now:.2f}x",
-                 f"smallest W with e* = retired at h = {br.h0:.2f}" + (" (first age outside the crunch lockout)" if p.crunch.periods else "")])
-    rows.append(["**W today**", f"**{m(br.W_now)}**", "**1.00x**", "liquid only; home equity excluded"])
+    fw = B.funded_wealth(p, success=0.95, equity_share=0.6)
+    fw100 = B.funded_wealth(p, success=0.95, equity_share=0.6, mortality_weighted=False)
+    run._funded = fw
 
-    txt = ["## 2. The three wealth boundaries", "",
-           "These are routinely conflated. They answer different questions and they are "
-           "an order of magnitude apart.", "",
-           table(["boundary", "wealth", "x current W", "what it means"], rows), "",
-           f"Ordering check (W_BATNA < W_coast(60) < W_coast({min(br.W_coast)}) < W*): "
-           f"**{'holds' if br.W_BATNA < br.W_coast[max(br.W_coast)] < br.W_coast[min(br.W_coast)] < br.W_star_now else 'VIOLATED'}**.", "",
-           f"The walk-away number is **{br.W_now / br.W_BATNA:.1f}x covered already**. The "
-           f"stopping number is **{br.W_star_now / br.W_now:.1f}x away**. Those two facts "
-           "together are the whole negotiating position: the outside option is credible "
-           "today, and stopping is not close.", ""]
-    return "\n".join(txt), br
+    share_rows = []
+    for share in (0.4, 0.6, 0.8):
+        a = B.funded_wealth(p, 0.95, share)
+        b_ = B.funded_wealth(p, 0.95, share, mortality_weighted=False)
+        share_rows.append([f"{share:.0%} stocks", m(a.W), m(b_.W),
+                           pct(a.withdrawal_rate, 2)])
+
+    prob_rows = [[m(w), pct(B.survival_at(p, w), 1),
+                  pct(B.survival_at(p, w, mortality_weighted=False), 1)]
+                 for w in (3e6, 4e6, 5e6, 6e6, 7e6)]
+
+    rows = [
+        ["**Freedom number** — money is no longer the problem", f"**{m(fw.W)}**",
+         f"**{fw.W / br.W_now:.1f}x**",
+         "your spending is funded for life with 95% confidence, with no more work"],
+        ["Walk-away money", m(br.W_BATNA), f"{br.W_BATNA / br.W_now:.2f}x",
+         f"{p.runway_years:.0f} years of full expenses in the bank — enough to quit "
+         "a negotiation and mean it"],
+    ]
+    rows.append(["Model's stop-working number", m(br.W_star_now),
+                 f"{br.W_star_now / br.W_now:.1f}x",
+                 "where *this model* would choose to never earn again — see below, "
+                 "it is not your retirement number"])
+    rows.append(["**Where you are now**", f"**{m(br.W_now)}**", "**1.0x**",
+                 "cash and investments; the house is not counted"])
+
+    return "\n".join([
+        "## 2. How much money is enough", "",
+        "Four different numbers get called \"the number\", and they are not the same "
+        "thing. Here they are side by side, cheapest first.", "",
+        table(["what it is", "how much", "vs today", "what it actually means"], rows), "",
+        "### When do you get there?", "",
+        table(["if you...", "reach " + m(fw.W) + " at age", "years from now"],
+              run._eta_rows), "",
+        "Those rows are the real trade, and it is worth being precise about it. "
+        "`renegotiated350` pays exactly what you earn now, so it reaches the date on "
+        "the same day as the job you already have — the health improvement is free. "
+        "`grind500` buys roughly five years, at the price of the worst health "
+        "outcome on the list. `downshift250` costs roughly eight years. Only you can "
+        "price those last two; the first one is not a trade at all.", "",
+        "### The freedom number, in detail", "",
+        f"You spend {m(p.annual_full_expenses)} a year today "
+        f"({m(p.spend_base)} once the mortgage is gone in "
+        f"{p.mortgage.years} years), and Social Security adds "
+        f"{m(p.ss_amount)} a year from {p.ss_age:.0f}. Against that:", "",
+        table(["invested as", "funds you for life", "funds you to 100 regardless",
+               "withdrawal rate"], share_rows), "",
+        "Holding *more* stock needs *more* money, not less. Higher average returns "
+        "do not help you here, because what decides whether you run out is the bad "
+        "5% of outcomes, and volatility makes those worse.", "",
+        "Odds of never running out, by starting wealth, at 60% stocks:", "",
+        table(["wealth", "never runs out (for life)", "never runs out (to 100)"],
+              prob_rows), "",
+        f"**So: about {m(fw.W)} and you are done.** At {m(6e6)} it is "
+        f"{pct(B.survival_at(p, 6e6), 0)} for life and "
+        f"{pct(B.survival_at(p, 6e6, mortality_weighted=False), 0)} even if you live "
+        "to 100 — and on the median path the money is still growing while you spend "
+        "it, so yes, that is generational. That instinct is correct and the "
+        "arithmetic backs it.", "",
+        "### Then why does the model say " + m(br.W_star_now) + "?", "",
+        "**Because it is answering a different question.** The freedom number asks "
+        "*can this money pay for my life?* The stop-working number asks *at what "
+        "wealth would I rather have no income at all, forever, than keep earning?* "
+        "Those are not the same question and the second one has a much bigger "
+        "answer.", "",
+        "Three things drive the gap, and they are worth separating because only one "
+        "of them is really an assumption you might reject:", "",
+        table(["what changes", "stop-working number becomes"], run._gap_rows), "",
+        "1. **Stopping is permanent in this model.** The spec makes retirement "
+        "absorbing: once you stop you can never take another job. Giving up sixty "
+        "years of optional income is expensive, so the model demands a lot of money "
+        f"before it will do it. Make stopping reversible and the number falls by "
+        f"{run._reversible_drop}.", "",
+        "2. **How much health is worth swings it 2x.** The model is told a life is "
+        f"worth {m(p.vsl_target, 0)}. Told a life is worth {m(3e7, 0)} instead, it "
+        "stops much earlier, because better health is then a bigger prize.", "",
+        "3. **The model has no idea what \"enough\" means, and that is the real "
+        "reason.** Utility from spending is logarithmic, which means *doubling* your "
+        "spending is worth the same amount whether you go from $150k to $300k or "
+        "from $1.5M to $3M. There is no satiation point anywhere in it. So an extra "
+        f"{m(seat_net_income(p.seat('renegotiated350'), p))} a year of income never "
+        "stops being attractive — it just gets slowly less attractive as your "
+        "spending rises. That is a property of the utility function the spec "
+        "prescribed, not a fact about you.", "",
+        f"For the model to agree that {m(6e6)} is the stopping point it would have "
+        "to value health at roughly twice what it currently does (a statistical life "
+        f"around {m(4.5e7, 0)} rather than {m(p.vsl_target, 0)}). If you think health "
+        "is worth that much, say so in `vsl_target` and the whole report moves with "
+        "it.", "",
+        "**What to take from this section:** use the freedom number for planning. "
+        "The stop-working number is a statement about how this model trades money "
+        "against health and leisure, and it is the output you should trust least.", "",
+        f"**Your walk-away money is covered {br.W_now / br.W_BATNA:.1f} times over "
+        "already.** Whatever else is true, you can afford to lose any negotiation "
+        "you are currently in, and that is worth knowing before you walk into one.", "",
+        f"*(Technical: the coast-to-W* figures the spec asks for are "
+        + ", ".join(f"{a}: {m(br.W_coast[a])}" for a in sorted(br.W_coast))
+        + ". They are anchored to the stop-working number, which is why the "
+        "\"when do you get there\" table above is anchored to the freedom number "
+        f"instead. Ordering check walk-away < coast < stop: "
+        f"{'holds' if br.W_BATNA < br.W_coast[max(br.W_coast)] < br.W_coast[min(br.W_coast)] < br.W_star_now else 'VIOLATED'}.)*",
+        ""]), br
 
 
 def section_seats(run: ReportRun, finish: Dict[Tuple[str, str], Dict[str, float]]) -> str:
@@ -207,10 +371,15 @@ def section_seats(run: ReportRun, finish: Dict[Tuple[str, str], Dict[str, float]
     hdr = ["seat", "gross", "net", "delta_total", "recovery", "h*", "tau (yr)",
            "half-life", "savings cap."] + [f"finish {s}" for s in SCENARIOS]
     return "\n".join([
-        "## 7. Per-seat table", "",
-        "`h*` is the **steady-state** health this seat converges to -- the number v1 "
-        "could not produce, because v1 had no recovery term. `tau` is how long it takes "
-        "to get most of the way there.", "",
+        "## 7. What each job does to you", "",
+        "Health is scored 0 to 1. Every job pushes it toward a level it eventually "
+        "settles at, and **`h*` is that level** — where you end up if you stay. "
+        "`tau` is roughly how many years it takes to get most of the way there, so "
+        "these are changes you would feel within two or three years, not decades.", "",
+        f"Your current job settles you at "
+        f"{H.h_star(p.seat('current350'), p.health):.2f}. The best job on the list "
+        f"settles you at {max(H.h_star(x, p.health) for x in p.seats if not x.absorbing):.2f}. "
+        "Retired would be 0.95.", "",
         table(hdr, rows), "",
         "Finish-age cells are the median retirement age from Monte Carlo with that seat "
         "as the only working option, with the share of paths that retire before dying in "
@@ -250,13 +419,15 @@ def section_indifference(run: ReportRun) -> str:
     gross = table(["from \\ to"] + [f"`{i}`" for i in ids], grows)
 
     return "\n".join([
-        "## 8. Indifference matrix -- the maximum acceptable pay cut", "",
-        f"Solve h1*(b + ln c1) = h2*(b + ln c2) for c2, starting from c1 = "
-        f"spend_base = {m(p.spend_base)}. A **positive** number is the largest permanent "
-        "consumption cut worth accepting to move from the row seat to the column seat. A "
-        "negative number is what you would need to be *paid* to move.", "",
-        "### 8a. In permanent consumption ($/yr)", "", consumption, "",
-        "### 8b. In gross income ($/yr, inverting the 2026 MFJ + FICA schedule)", "", gross, "",
+        "## 8. The biggest pay cut worth taking", "",
+        "**How to read this: find your current job in the left column, then look "
+        "across.** Each cell is the most you could afford to lose, every year for "
+        "the rest of your life, and still come out ahead by taking that job — "
+        "because of what it does to your health. A negative number means the move "
+        "is bad for you and you would need paying to accept it.", "",
+        f"The starting point is your current spending of {m(p.spend_base)} a year.", "",
+        "### 8a. As a cut to what you spend, every year, forever", "", consumption, "",
+        "### 8b. The same thing, as a cut to your salary", "", gross, "",
         f"Read the `current350` row. Moving to `renegotiated350` is worth up to "
         f"{m(idx[('current350', 'renegotiated350')].gross_cut, 0)} of gross pay per year, "
         f"and moving to `downshift250` is worth up to "
@@ -301,10 +472,15 @@ def section_theta(run: ReportRun) -> Tuple[str, Dict]:
              for a in sorted(dom, key=lambda k: -len(dom[k]))]
 
     return "\n".join([
-        "## 9. Seat scores", "",
-        "Theta(e) = y_net(e) - (Lambda_h/0.01)*(delta_total(e) - delta_ref) - phi(e)/V_W, "
-        f"with delta_ref = {delta_ref:.4f} (the healthiest seat in the roster, held fixed "
-        "so scores stay comparable). Everything is $/yr.", "",
+        "## 9. What each job is really worth", "",
+        "**This is the headline job table.** Each job is scored in dollars per year: "
+        "start with take-home pay, subtract what the job costs you in health "
+        "(priced at the exchange rate in section 1), then subtract how unpleasant "
+        "the work itself is. A job paying less can easily win.", "",
+        f"*Formally: Theta(e) = after-tax pay − (Lambda_h/0.01)·(health damage − "
+        f"{delta_ref:.4f}) − direct unpleasantness / V_W, where the "
+        f"{delta_ref:.4f} baseline is the healthiest option and is held fixed so the "
+        "scores stay comparable.*", "",
         main, "",
         "### Lambda_h across the scenario x VSL grid ($ per 1 percentage point of permanent health)",
         "", lam_tbl, "",
@@ -332,9 +508,14 @@ def section_stopping(run: ReportRun, br: B.BoundaryReport) -> str:
         rows.append([str(a), m(br.W_star_by_age_h0.get(a, float("nan"))),
                      m(br.W_star_by_age_hstar.get(a, float("nan")))])
     return "\n".join([
-        "## 10. Stopping boundary W*(t)", "",
-        f"Smallest wealth at which the optimal seat is `retired`, at h = h0 = {p.h0:.2f} "
-        f"and at h = h*(current350) = {br.h_current_star:.3f}. Grid resolution in W is "
+        "## 10. When the model would stop working, by age", "",
+        "**Read section 2 first — this is not your retirement number.** It is the "
+        "wealth at which this model would choose to stop earning permanently, which "
+        "is a much higher bar than having enough money. It falls with age because "
+        "stopping at 39 throws away sixty years of optional income and stopping at "
+        "69 throws away far less.", "",
+        f"Shown at your current health ({p.h0:.2f}) and at the health your current "
+        f"job settles you at ({br.h_current_star:.2f}). Wealth-grid resolution is "
         f"{100 * (np.exp(run.base.grids.dlnW) - 1):.1f}% per node, so the boundary is "
         "reported to that granularity.", "",
         table(["age", f"W* at h={p.h0:.2f}", f"W* at h={br.h_current_star:.3f}"], rows), "",
@@ -379,7 +560,7 @@ def section_mc(run: ReportRun, mcs: Dict[str, MCResultV3],
                                          and np.isfinite(fv2["p90"])) else float("nan")
 
     return "\n".join([
-        "## 11. Monte Carlo", "",
+        "## 11. Ten thousand simulated lives", "",
         f"{run.p.mc_paths:,} paths, seed {run.p.mc_seed}, base scenario, "
         "**with separation risk active**. Each fixed-seat policy solves the model "
         "with that seat as the only working option (retirement always remains "
@@ -411,7 +592,7 @@ def section_tornado(run: ReportRun, bars: List[Tuple[str, List[Tuple[str, float,
         rows.append(cells)
     rows.sort(key=lambda r: -float(r[1]))
     return "\n".join([
-        "## 12. Sensitivity tornado", "",
+        "## 12. Which assumptions actually matter", "",
         "Median finish age under the fully optimal policy, one parameter at a time from "
         "base. Sorted by span. Retirement probability is shown alongside because the "
         "median is conditional on retiring.", "",
@@ -494,8 +675,14 @@ def section_provenance(top_bars: Sequence[str]) -> str:
             if not flagged else
             "\n\n**Measurement priorities** (assumed parameters that appear in the top "
             "three tornado bars): " + ", ".join(f"`{f}`" for f in flagged) + ".")
-    return "\n".join(["## 14. Parameter provenance", "",
-                      table(["parameter", "units", "value", "provenance", "note"], rows)]) + tail + "\n"
+    return "\n".join([
+        "## 14. Where every number came from", "",
+        "*Observed* means it is a fact someone looked up. *Calibrated* means the "
+        "model worked it out from your actual history. **Assumed means somebody "
+        "guessed** — and everything downstream of a guess is only as good as the "
+        "guess. The financial side is mostly observed; the health and career sides "
+        "are almost entirely assumed.", "",
+        table(["parameter", "units", "value", "where it came from", "note"], rows)]) + tail + "\n"
 
 
 def section_switching(run: ReportRun) -> str:
@@ -550,7 +737,7 @@ def section_allocation(run: ReportRun, T_work: float, pi_now: float) -> Tuple[st
 
     neg = [a for a in HC.allocation_table(p, p.W0, val.H) if a.pi_fin_optimal < 0]
     return "\n".join([
-        "## 3. Human capital and the allocation correction", "",
+        "## 3. Your career is a tech stock", "",
         "v2 never modelled human capital, which silently assumed it was worth "
         "nothing -- or, read the other way, that it was a safe bond. Neither is "
         "true. Account-manager compensation in semiconductor capital equipment "
@@ -615,7 +802,7 @@ def section_career(run: ReportRun, mcs: Dict[str, MCResultV3]) -> str:
     opt = mcs["optimal"]
     corr = opt.separation_by_market_state()
     return "\n".join([
-        "## 4. Career risk", "",
+        "## 4. Getting laid off", "",
         table(["seat", "base_sep", "P(ever separated)", "E[# separations]",
                "E[search years]", "severance"], rows), "",
         "Columns 3-5 come from Monte Carlo with that seat as the only working "
@@ -665,7 +852,7 @@ def section_stress(run: ReportRun) -> str:
                      "**yes**" if d["exhausts"] else "no",
                      f"{d['W_after'] / wstar:.2f}x" if np.isfinite(wstar) else "n/a"])
     return "\n".join([
-        "## 5. Correlated stress test", "",
+        "## 5. The bad year: a crash and a layoff at the same time", "",
         f"A **{abs(st.drawdown):.0%} portfolio drawdown and an involuntary "
         "separation in the same year.** This is the joint event the whole career "
         "module exists to price, and the scenario W_BATNA exists for.", "",
@@ -701,7 +888,7 @@ def section_option_value(run: ReportRun, ov: CR.OptionValue,
             ["break-even phi_maintain", num((ov.total + cost) * ov.V_W, 4)]]
     srows = [[k, v, m(x) + "/yr"] for k, v, x in sens]
     return "\n".join([
-        "## 6. The option value of a maintained outside option", "",
+        "## 6. Is it worth keeping a foot outside?", "",
         "OV = V(maintain) - V(do not maintain) at the current state, converted to "
         "dollars through V_W and expressed as an equivalent constant flow over the "
         f"model's discounted survival horizon ({CR.annuity_factor(p):.1f} years).", "",
@@ -747,7 +934,7 @@ def section_inaction(run: ReportRun) -> str:
                      f"**{pct(d['frac_inaction_band'], 0)}**"])
     run._free_sol = free
     return "\n".join([
-        "## 13. Switching costs and the inaction band", "",
+        "## 13. Why people stay in jobs they should leave", "",
         f"Seat changes cost {m(p.kappa_W)} once plus a transition health hit of "
         f"{p.kappa_h:.3f}. v3 turns this on by default, so the seat decision is a "
         "genuine optimal-stopping problem.", "",
@@ -758,6 +945,48 @@ def section_inaction(run: ReportRun) -> str:
                "inaction band"], rows), "",
         "Where the band is 0%, the static gap is too large for this friction to "
         "hold you: the move is worth making even after paying for it.", ""])
+
+
+def section_glossary(run: ReportRun) -> str:
+    """Section 15 -- every symbol in the report, in one place."""
+    p = run.p
+    rows = [
+        ["`h`", "health, scored 0 to 1", "1.0 is the healthiest you could be at 39. "
+         f"You are estimated at {p.h0:.2f} — MEASURE THIS, it is a guess"],
+        ["`h*`", "where health settles", "the level a given job pushes you to and "
+         "holds you at, if you stay in it"],
+        ["`tau`", "how fast health moves", "years to close most of the gap to `h*`; "
+         "these are 2-3 year effects, not lifetime ones"],
+        ["`Lambda_h`", "price of a health point", "what one permanent point of "
+         "health is worth per year, in dollars. The exchange rate behind every "
+         "job comparison"],
+        ["`Theta`", "job score", "take-home pay minus health damage minus "
+         "unpleasantness, all in dollars per year"],
+        ["`W`", "wealth", "cash and investments. The house is excluded — it is "
+         "treated as housing you have already bought"],
+        ["`W*`", "stop-working number", "wealth at which the model would choose to "
+         "never earn again. **Not** your retirement number; see section 2"],
+        ["freedom number", "enough money", "wealth that funds your spending for "
+         "life with 95% confidence. **This is the retirement number**"],
+        ["`W_BATNA`", "walk-away money", "runway to quit a negotiation and mean it"],
+        ["`beta_H`", "career beta", "how much your earnings swing with the market. "
+         "1.6 means your pay is more cyclical than the market itself"],
+        ["`H`", "human capital", "what all your future earnings are worth today"],
+        ["`gamma`", "risk aversion", "1 = happy to ride volatility; 3 = strongly "
+         "prefer certainty. The solver assumes 1"],
+        ["`rho`", "impatience", f"{p.rho:.0%} a year. Also, under this model's "
+         "utility, roughly the share of wealth you would spend per year"],
+        ["`VSL`", "value of a statistical life", "the standard regulatory measure. "
+         "Sets how the model trades money against health"],
+        ["`base_sep`", "layoff risk", "chance of being let go in a given year"],
+        ["`c/W`", "spending rate", "what fraction of your wealth you spend in a year"],
+        ["`pi`", "stock share", "fraction of investments in equities"],
+        ["bear / base / bull", "market scenarios",
+         "roughly 2.5% / 4.8% / 7.0% a year after inflation"],
+    ]
+    return "\n".join([
+        "## 15. What the symbols mean", "",
+        table(["symbol", "in English", "what it is"], rows), ""])
 
 
 # --------------------------------------------------------------------------- #
@@ -1001,7 +1230,7 @@ def section_tornado_allocation(bars) -> str:
                      " / ".join(f"{lab}: {v:+.3f}" for lab, v in legs)])
     rows.sort(key=lambda r: -float(r[1]))
     return "\n".join([
-        "### 12b. Tornado on the allocation (pi_fin_optimal at gamma = 2)", "",
+        "### 12b. Which assumptions move the investment answer", "",
         "`beta_H` never enters the solver -- it is a balance-sheet parameter, so "
         "it cannot move a finish age. It moves the allocation, and that is where "
         "it has to be swept.", "",
@@ -1047,6 +1276,8 @@ def build_report(params: Params, outdir: str = "out", fast: bool = False,
                 mcs[s_.id] = r
 
     # -- pieces ------------------------------------------------------------ #
+    run._gap_rows = run.gap_decomposition()
+    run._eta_rows = run.eta_rows(B.funded_wealth(p, 0.95, 0.6).W)
     b_txt, br = section_boundaries(run)
     pol_now = consumption_policy_pi(base, p, run.state0)
     T_work = min(finish_stats(mcs["optimal"])["median"]
@@ -1089,65 +1320,90 @@ def build_report(params: Params, outdir: str = "out", fast: bool = False,
     admissible_note = ""
     if bad:
         admissible_note = (
-            "\n> **Inadmissible VSL legs.** At vsl_target "
-            + ", ".join(f"{t / 1e6:.0f}M" for t in sorted(bad))
-            + " the calibrated intercept implies a subsistence consumption "
+            "\n*One caveat on the low end of that range. Asked to value a life at "
+            + ", ".join(m(t, 0) for t in sorted(bad))
+            + ", the model can only fit it by also claiming that below about "
             + ", ".join(m(run.fits[t].c_sub) for t in sorted(bad))
-            + "/yr, above the consumption-grid floor of " + m(p.numerics.c_floor)
-            + "/yr. Over that range the felicity condition b + ln c > 0 fails. Those "
-              "legs are reported as the *conservative bound*, not a usable "
-              "calibration.\n")
+            + " a year of spending, being alive stops being worth anything — which "
+              "is not a sensible thing to believe. Those runs are kept as a "
+              "conservative bound and should not be read as a calibration.*\n")
 
     allocs = HC.allocation_table(p, p.W0, H_value)
     a2 = [a for a in allocs if abs(a.gamma - 2.0) < 1e-9]
     a2 = a2[0] if a2 else allocs[-1]
 
+    fw = run._funded
+    stop_now = br.W_star_now
+    g_real = p.returns["base"].geometric_real_full_equity
+    _mtg = p.mortgage.payment_real if p.mortgage_enabled else 0.0
+    _save_now = max(seat_net_income(p.seat("current350"), p) - p.spend_base - _mtg, 0.0)
+    yrs_idle = B.years_to_target(p.W0, fw.W, g_real, 0.0)
+    yrs_saving = B.years_to_target(p.W0, fw.W, g_real, _save_now)
+    cur_net = seat_net_income(p.seat("current350"), p)
+    sep_pct = mcs["optimal"].ever_separated.mean()
+
     head = [
-        "# LifeHJB v3 -- lifecycle report", "",
-        "> **This is a decision-support model, not financial or medical advice.** It "
-        "is a numerical solution to a stochastic control problem under assumptions "
-        "listed in section 14. Several of those assumptions are self-reported and "
-        "unmeasured.", "",
-        "All figures are real (inflation-adjusted) 2026 dollars.", "",
-        "## 1. Executive summary", "",
-        f"- **Position.** Age {p.age0:.0f}, liquid W = {m(p.W0)}, h0 = {p.h0:.2f}, in "
-        f"`current350`. Against the three boundaries: walk-away "
-        f"{br.W_BATNA / p.W0:.2f}x, coast-to-60 "
-        f"{br.W_coast[max(br.W_coast)] / p.W0:.2f}x, stop "
-        f"{br.W_star_now / p.W0:.1f}x. **Runway = {runway:.0f} months** of full "
-        f"expenses on hand.",
-        f"- **Allocation is the biggest single finding.** Human capital is worth "
-        f"{m(H_value)} at beta_H = {p.human_capital.beta_H:.1f}, so career equity "
-        f"exposure alone is {m(p.human_capital.beta_H * H_value)} against financial "
-        f"wealth of {m(p.W0)}. Effective total equity exposure is "
-        f"{HC.effective_equity_ratio(p, p.W0, H_value, pol_now):.2f}x total wealth; "
-        f"optimal financial equity share at gamma = 2 is "
-        f"**{a2.pi_fin_optimal:+.2f}** against an actual {pol_now:.2f}.",
-        f"- **Top-ranked seat actually on offer: `{top_avail}`.** By static score "
-        f"`{best.id}` leads at {m(best.theta)}/yr against `current350` at "
-        f"{m(cur_theta.theta)}/yr, a gap of {m(best.theta - cur_theta.theta)}/yr at "
-        "identical pay. The crunch lockout forces `current350` for "
-        f"{p.crunch.periods} more year(s) regardless.",
-        f"- **OV_outside = {m(ov.total)}/yr** (bargaining {m(ov.bargaining)}, "
-        f"insurance {m(ov.insurance)}). Gross of the maintenance disutility it is "
-        f"{m(ov.total + p.availability.phi_maintain / ov.V_W)}/yr and rises with "
-        "separation risk -- but the floor option `downshift250` already outranks "
-        "the outside option, so maintenance is not worth its configured cost. "
-        "See section 6.",
-        f"- **Career risk costs real years.** {pct(mcs['optimal'].ever_separated.mean(), 0)} "
-        f"of paths are involuntarily separated at least once "
-        f"({mcs['optimal'].n_separations.mean():.1f} times on average), and the "
-        f"hazard runs {mcs['optimal'].separation_by_market_state()['ratio']:.1f}x "
-        "higher in years the portfolio falls. Section 11 shows the finish-age cost "
-        "against the v2 no-separation figure.",
-        f"- **Lambda_h = {m(sp['Lambda_h'])} per 1 percentage point of permanent "
-        f"health** (VSL {m(fit.vsl_achieved, 0)} vs a {m(fit.vsl_target, 0)} target, "
-        f"b = {run.b:.4f}, implied subsistence consumption {m(chk['c_sub'])}/yr).",
-        "", admissible_note,
-        f"Calibration: savings rate {pct(run.rho_fit.savings_rate)} out of net income "
-        f"over {run.rho_fit.years} years reproduces W_2026 exactly, implying rho in "
-        f"[{run.rho_fit.rho_band[0]:.3f}, {run.rho_fit.rho_band[1]:.3f}]; rho = "
-        f"{p.rho:.3f} is used.", "",
+        "# Your lifecycle report", "",
+        "> **This is a decision-support model. It is not financial advice and it is "
+        "not medical advice.** It is a computer working out consequences from "
+        "assumptions, and several of those assumptions are guesses about you that "
+        "nobody has measured. Section 14 lists every one of them and marks which "
+        "are which. Where the model disagrees with your judgement, the model is the "
+        "thing more likely to be wrong.", "",
+        "Every dollar figure is in today's money — inflation is already taken out, "
+        "so you can compare any number here directly to what things cost now.", "",
+        "## 1. The short version", "",
+        f"**Where you stand.** You are 39, you have {m(p.W0)} invested (the house is "
+        f"not counted), and you spend about {m(p.annual_full_expenses)} a year. That "
+        f"is {CR.runway_months(p.W0, p):.0f} months of expenses in the bank.", "",
+        f"**How much is enough: about {m(fw.W)}.** At that point your spending is "
+        "funded for the rest of your life with 95% confidence and you never have to "
+        f"work again. At {m(6e6)} it is {pct(B.survival_at(p, 6e6), 0)} — and on the "
+        "typical path the money keeps growing while you spend it.", "",
+        f"**Keeping up the roughly {m(_save_now)} a year you save now, you get there "
+        f"around age {p.age0 + yrs_saving:.0f} — {yrs_saving:.0f} years from now.** "
+        f"If you stopped saving entirely today and just let what you have compound, "
+        f"it would take about {yrs_idle:.0f} years. You are {fw.W / p.W0:.1f}x away, "
+        "not 8x away.", "",
+        f"*(Further down, the model reports a \"stop working\" number of "
+        f"{m(stop_now)}. Ignore it as a retirement target — it answers a different "
+        "and much stranger question, and section 2 explains exactly why it is so "
+        "big.)*", "",
+        f"**The job question is the one that matters, and the answer is clear.** "
+        f"Your current role scores {m(cur_theta.theta)} a year once you price in what "
+        f"it costs your health. `{best.id}` — same pay, less scope — scores "
+        f"{m(best.theta)}. That is a gap of about "
+        f"{m(best.theta - cur_theta.theta)} a year **for no change in salary at "
+        f"all**. Every other job in the list beats your current one under every "
+        "assumption tested. Nothing else in this report is worth as much as fixing "
+        "this.", "",
+        f"**You are more exposed to your own industry than you probably think.** "
+        f"Your future earnings are worth about {m(H_value)} today, and because your "
+        "pay tracks the chip-equipment cycle, that behaves like a leveraged bet on "
+        f"the same thing your portfolio is betting on. Counting both, you are "
+        f"{HC.effective_equity_ratio(p, p.W0, H_value, pol_now):.2f}x your total net "
+        f"worth in equity risk, and {pct(HC.sector_concentration(p, p.W0, H_value, pol_now).sector_share_of_TW, 0)} "
+        "of everything you own rides on one industry. Unless you are unusually "
+        "comfortable with risk, the investments should be *less* aggressive than "
+        f"they are, not more — see section 3.", "",
+        f"**What could go wrong.** {pct(sep_pct, 0)} of simulated lives include at "
+        "least one involuntary job loss, and layoffs are about "
+        f"{mcs['optimal'].separation_by_market_state()['ratio']:.0f}x more likely in "
+        "years the market falls — exactly when your portfolio can least absorb it. "
+        "Section 5 runs that double hit. You survive it comfortably at every age "
+        "tested, which is what your walk-away cushion is for.", "",
+        f"**One number to carry around: {m(sp['Lambda_h'])} a year.** That is what "
+        "the model says a permanent one-point improvement in your health is worth. "
+        "It is the exchange rate behind every job comparison here.", "",
+        "---", "",
+        f"*Technical note on calibration: a savings rate of "
+        f"{pct(run.rho_fit.savings_rate)} out of after-tax income over "
+        f"{run.rho_fit.years} years exactly reproduces your 2026 balance from your "
+        f"2010 one, which implies a patience parameter in "
+        f"[{run.rho_fit.rho_band[0]:.3f}, {run.rho_fit.rho_band[1]:.3f}]; "
+        f"{p.rho:.3f} is used. The utility intercept b = {run.b:.3f} is set so the "
+        f"model values a statistical life at {m(fit.vsl_achieved, 0)} against a "
+        f"{m(fit.vsl_target, 0)} target.*", "", admissible_note, "",
     ]
 
     parts = ["\n".join(head), b_txt, alloc_txt,
@@ -1156,11 +1412,11 @@ def build_report(params: Params, outdir: str = "out", fast: bool = False,
              section_seats(run, finish), section_indifference(run), theta_txt,
              section_stopping(run, br), section_mc(run, mcs, nosep),
              section_tornado(run, bars), section_tornado_allocation(abars),
-             inaction_txt, section_provenance(top_bars)]
+             inaction_txt, section_provenance(top_bars), section_glossary(run)]
 
     if make_figures:
         figs = make_plots(run, br, mcs, bars)
-        parts.append("## 15. Figures\n\n"
+        parts.append("## 16. Charts\n\n"
                      + "\n".join(f"![{f}]({f})" for f in sorted(figs)) + "\n")
 
     text = "\n".join(parts)

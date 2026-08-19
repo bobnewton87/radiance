@@ -19,7 +19,7 @@ from typing import Dict, List, Optional, Sequence
 import numpy as np
 
 from . import health as H
-from .model import Params
+from .model import Params, death_prob, social_security
 from .solver import Solution
 
 
@@ -76,6 +76,23 @@ def w_star_curve(sol: Solution, ages: Sequence[float], h: float) -> Dict[int, fl
 def w_batna(params: Params) -> float:
     """Credible-walk-away wealth: runway years of full expenses."""
     return params.runway_years * params.annual_full_expenses
+
+
+def years_to_target(W0: float, target: float, g_real: float,
+                    saving_per_year: float = 0.0) -> float:
+    """Years for wealth to reach *target*, growing at g_real and saving each year.
+
+    Answers the question a reader actually has -- "when do I get there?" -- for a
+    given savings rate. Returns inf if the target is never reached.
+    """
+    W, g = float(W0), float(g_real)
+    if W >= target:
+        return 0.0
+    for k in range(1, 200):
+        W = W * (1.0 + g) + saving_per_year
+        if W >= target:
+            return float(k)
+    return float("inf")
 
 
 def w_coast(params: Params, target_age: int, w_star_at_target: float,
@@ -199,3 +216,106 @@ def inaction_band_v3(sol_frictional, sol_frictionless, state: int, age: float) -
                 frac_frictionless_moves=float(free_moves.mean()),
                 frac_inaction_band=float(band.mean()),
                 band_mask=band)
+
+
+# --------------------------------------------------------------------------- #
+# The freedom number: what wealth actually funds this life                     #
+# --------------------------------------------------------------------------- #
+
+@dataclass
+class FundedWealth:
+    """Wealth at which spending is funded for life with a given confidence.
+
+    This is a *sustainability* question -- can this pile of money pay for this
+    life? -- and it is emphatically **not** the same question as W*, which asks
+    what wealth would make the model *choose* to stop earning forever. The two
+    are routinely conflated and they differ by more than 2x here.
+    """
+    W: float
+    success: float
+    equity_share: float
+    to_age: Optional[float]
+    annual_spend_now: float
+    annual_spend_later: float
+    withdrawal_rate: float
+    mortality_weighted: bool
+
+
+def _funded_paths(params: Params, W0: float, pi: float, shocks: np.ndarray,
+                  mort: np.ndarray, mortality_weighted: bool,
+                  to_age: Optional[float]) -> float:
+    """Share of paths that never run out. Shocks are passed in so that common
+    random numbers make the success rate monotone in W and the bisection clean."""
+    sc = params.returns[params.scenario]
+    n_t, n_p = shocks.shape
+    W = np.full(n_p, float(W0))
+    alive = np.ones(n_p, dtype=bool)
+    ruined = np.zeros(n_p, dtype=bool)
+    ages = params.ages
+    drift = sc.rf_real + pi * sc.erp - 0.5 * pi ** 2 * sc.sigma ** 2
+    for k in range(n_t):
+        age = float(ages[k])
+        if to_age is not None and age >= to_age:
+            break
+        m = params.mortgage.payment_at(age, params.age0) if params.mortgage_enabled else 0.0
+        need = params.spend_base + m - social_security(age, params)
+        W = np.where(alive & ~ruined, W - need, W)
+        ruined |= alive & (W <= 0.0)
+        W = np.where(alive & ~ruined, W * np.exp(drift + pi * sc.sigma * shocks[k]), W)
+        if mortality_weighted:
+            q = death_prob(age, np.full(n_p, 0.85), params)
+            alive &= mort[k] >= q
+    return 1.0 - float(ruined.mean())
+
+
+def funded_wealth(params: Params, success: float = 0.95, equity_share: float = 0.6,
+                  paths: int = 12_000, seed: int = 202, to_age: Optional[float] = None,
+                  mortality_weighted: bool = True,
+                  bounds: Tuple[float, float] = (5e5, 2.5e7)) -> FundedWealth:
+    """Smallest wealth that funds ``spend_base`` for life with probability ``success``.
+
+    Spending is the configured real budget plus mortgage service while it lasts,
+    less Social Security once it starts. No labour income: this asks what the
+    portfolio alone can carry.
+    """
+    rng = np.random.default_rng(seed)
+    n_t = params.ages.size - 1
+    shocks = rng.standard_normal((n_t, paths))
+    mort = rng.random((n_t, paths))
+
+    lo, hi = bounds
+    for _ in range(30):
+        mid = 0.5 * (lo + hi)
+        if _funded_paths(params, mid, equity_share, shocks, mort,
+                         mortality_weighted, to_age) < success:
+            lo = mid
+        else:
+            hi = mid
+    W = 0.5 * (lo + hi)
+    full = params.annual_full_expenses
+    return FundedWealth(W=W, success=success, equity_share=equity_share, to_age=to_age,
+                        annual_spend_now=full, annual_spend_later=params.spend_base,
+                        withdrawal_rate=full / W if W else float("nan"),
+                        mortality_weighted=mortality_weighted)
+
+
+def funded_wealth_table(params: Params, shares: Sequence[float] = (0.4, 0.6, 0.8),
+                        success: float = 0.95) -> Dict[str, List[FundedWealth]]:
+    """The freedom number under both readings of 'for life'."""
+    return {
+        "for life (mortality-weighted)":
+            [funded_wealth(params, success, s) for s in shares],
+        "to age 100 regardless":
+            [funded_wealth(params, success, s, to_age=None, mortality_weighted=False)
+             for s in shares],
+    }
+
+
+def survival_at(params: Params, W: float, equity_share: float = 0.6,
+                paths: int = 12_000, seed: int = 202,
+                mortality_weighted: bool = True) -> float:
+    rng = np.random.default_rng(seed)
+    n_t = params.ages.size - 1
+    return _funded_paths(params, W, equity_share,
+                         rng.standard_normal((n_t, paths)), rng.random((n_t, paths)),
+                         mortality_weighted, None)
