@@ -1,0 +1,58 @@
+# LifeHJB v2 -- calibrated to one person, in real (inflation-adjusted) 2026 dollars.
+# Provenance for every entry is in README.md and in section 9 of the generated report.
+
+age0: 39.0                 # end of August 2026
+W0: 1_850_000              # liquid only; ~900_000 home equity EXCLUDED
+h0: 0.72                   # calibrated to reported perceived age ~50 at 39 -- MEASURE THIS
+spend_base: 150_000        # real, ex-mortgage-P&I, includes ~20_000 DFW property tax
+mortgage: {balance: 126_000, rate_nominal: 0.03625, years: 7}
+
+rho: 0.02
+omega_bequest: 2.0
+vsl_target: 22_000_000
+vsl_band: [15_000_000, 30_000_000]
+
+health:
+  delta0: 0.02
+  delta_cognitive: 0.08
+  delta_travel: 0.10
+  delta_autonomy: 0.04
+  rho_h: 0.6
+  h_min: 0.35
+  h_max_decay: 0.004       # per year of age
+mortality_health_coupled: true
+
+returns:
+  base: {rf_real: 0.020, erp: 0.032, sigma: 0.16}
+  bear: {rf_real: 0.015, erp: 0.015, sigma: 0.18}
+  bull: {rf_real: 0.020, erp: 0.055, sigma: 0.16}
+
+ss: {enabled: true, amount: 40_000, age: 67}
+switching_costs: {enabled: false, kappa_W: 40_000, kappa_h: 0.02}
+boundaries: {runway_years: 3, coast_target_ages: [49, 52, 55, 57, 60]}
+mc: {paths: 10_000, seed: 42}
+
+seats:
+  - {id: grind500,        y: 500_000, c_load: 1.00, travel: 0.25, autonomy: 0.30, r: 0.35, phi: 0.30, note: "more scope, more money"}
+  - {id: current350,      y: 350_000, c_load: 0.85, travel: 0.20, autonomy: 0.35, r: 0.45, phi: 0.18, note: "status quo"}
+  - {id: oldrole350,      y: 350_000, c_load: 0.30, travel: 0.55, autonomy: 0.55, r: 0.40, phi: 0.12, note: "mastered role, heavy travel"}
+  - {id: amat400,         y: 400_000, c_load: 0.60, travel: 0.25, autonomy: 0.60, r: 0.62, phi: 0.10, note: "outside role, correctly leveled"}
+  - {id: renegotiated350, y: 350_000, c_load: 0.50, travel: 0.15, autonomy: 0.65, r: 0.70, phi: 0.08, note: "same pay, scope relief"}
+  - {id: downshift250,    y: 250_000, c_load: 0.35, travel: 0.10, autonomy: 0.75, r: 0.80, phi: 0.04, note: "lower pay, low load"}
+  - {id: retired,         y: 0,       c_load: 0.05, travel: 0.02, autonomy: 0.95, r: 0.92, phi: 0.00, absorbing: true, note: "absorbing"}
+
+# Numerical grids. Not economics -- but c_floor is the one entry that carries an
+# economic reading: it is the subsistence consumption below which the model
+# refuses to price health. See README, "The felicity floor".
+numerics:
+  n_W: 60
+  W_min: 50_000
+  W_max: 30_000_000
+  n_h: 14
+  n_c: 30
+  c_frac_min: 0.01
+  c_frac_max: 0.95
+  c_floor: 15_000
+  n_pi: 6
+  n_gh: 7
+  age_max: 100
