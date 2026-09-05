@@ -3,53 +3,44 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-09-04T13:52:34.183Z",
-  "date": "2026-09-04",
-  "classCount": 5,
+  "scrapedAt": "2026-09-05T13:06:29.386Z",
+  "date": "2026-09-05",
+  "classCount": 4,
   "classes": [
     {
-      "name": "Strong-er HIIT (HIITZone)",
-      "time": "5:30 am",
+      "name": "Barbell 45",
+      "time": "9:00 am",
       "duration": 45,
-      "instructor": "Serena G",
+      "instructor": "Deborah Y",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "Superset HIIT (HIITZone)",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Braeden H",
       "tags": [
         "intervals"
-      ]
-    },
-    {
-      "name": "Yoga Body Sculpt",
-      "time": "8:30 am",
-      "duration": 60,
-      "instructor": "Dimple P",
-      "tags": [
-        "not_cardio"
-      ]
-    },
-    {
-      "name": "So You Think You Can't Dance",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Emily E",
-      "tags": [
-        "steady"
       ]
     },
     {
       "name": "The Ride",
       "time": "9:30 am",
       "duration": 45,
-      "instructor": "Serena G",
+      "instructor": "Rachael C.",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
-      "instructor": "Mona D",
+      "name": "ZUMBA ®",
+      "time": "10:00 am",
+      "duration": 60,
+      "instructor": "JoJo",
       "tags": [
-        "not_cardio"
+        "steady"
       ]
     }
   ]
