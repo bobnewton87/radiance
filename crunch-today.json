@@ -3,35 +3,35 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-09-06T13:17:22.513Z",
-  "date": "2026-09-06",
+  "scrapedAt": "2026-09-07T15:23:18.089Z",
+  "date": "2026-09-07",
   "classCount": 3,
   "classes": [
     {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Mark L",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "The Ride: Let the Beat Drop",
-      "time": "10:00 am",
-      "duration": 45,
-      "instructor": "Des",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
+      "name": "Band Camp",
+      "time": "8:30 am",
+      "duration": 30,
       "instructor": "Robyn R",
       "tags": [
-        "not_cardio"
+        "unknown"
+      ]
+    },
+    {
+      "name": "Transform it: Cardio",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "steady"
+      ]
+    },
+    {
+      "name": "Transform it: Core",
+      "time": "9:30 am",
+      "duration": 30,
+      "instructor": "Robyn R",
+      "tags": [
+        "unknown"
       ]
     }
   ]
