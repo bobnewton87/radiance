@@ -3,12 +3,12 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-09-22T14:15:11.691Z",
-  "date": "2026-09-22",
-  "classCount": 12,
+  "scrapedAt": "2026-09-24T14:31:00.523Z",
+  "date": "2026-09-24",
+  "classCount": 10,
   "classes": [
     {
-      "name": "The Ride",
+      "name": "The Ride: Let the Beat Drop",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
@@ -17,52 +17,61 @@
       ]
     },
     {
-      "name": "Yoga Body Sculpt",
+      "name": "Top it Off",
       "time": "8:30 am",
-      "duration": 60,
-      "instructor": "Dimple P",
-      "tags": [
-        "not_cardio"
-      ]
-    },
-    {
-      "name": "The Ride",
-      "time": "9:00 am",
-      "duration": 45,
+      "duration": 30,
       "instructor": "Serena G",
       "tags": [
-        "steady"
+        "unknown"
       ]
     },
     {
-      "name": "CircHIIT (HIITZone)",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Robyn R",
+      "name": "Top to Bottom Burnout",
+      "time": "9:00 am",
+      "duration": 30,
+      "instructor": "Serena G",
       "tags": [
-        "intervals"
+        "unknown"
+      ]
+    },
+    {
+      "name": "The Ride: Let the Beat Drop",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Rachael C.",
+      "tags": [
+        "steady"
       ]
     },
     {
       "name": "ZUMBA ®",
       "time": "9:30 am",
       "duration": 60,
-      "instructor": "Rachael C.",
+      "instructor": "Angie",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "Barbell 45",
-      "time": "10:30 am",
+      "name": "ExtremeHIIT (HIITZone)",
+      "time": "9:30 am",
       "duration": 45,
-      "instructor": "Rachael C.",
+      "instructor": "Gideon E",
       "tags": [
-        "unknown"
+        "intervals"
       ]
     },
     {
-      "name": "ExtremeHIIT (HIITZone)",
+      "name": "Yoga Body Sculpt",
+      "time": "10:30 am",
+      "duration": 60,
+      "instructor": "Sangita R",
+      "tags": [
+        "not_cardio"
+      ]
+    },
+    {
+      "name": "Strong-er HIIT (HIITZone)",
       "time": "12:00 pm",
       "duration": 45,
       "instructor": "Lauren I",
@@ -71,48 +80,21 @@
       ]
     },
     {
-      "name": "Barbell 45",
+      "name": "P3 Pilates",
       "time": "5:30 pm",
       "duration": 45,
-      "instructor": "Phena",
+      "instructor": "Rachael C.",
       "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Superset HIIT (HIITZone)",
-      "time": "6:15 pm",
-      "duration": 45,
-      "instructor": "Nikki",
-      "tags": [
-        "intervals"
-      ]
-    },
-    {
-      "name": "The Ride: Level it Up",
-      "time": "6:30 pm",
-      "duration": 45,
-      "instructor": "Delina R",
-      "tags": [
-        "steady"
+        "not_cardio"
       ]
     },
     {
       "name": "ZUMBA ®",
       "time": "6:30 pm",
       "duration": 60,
-      "instructor": "Betsy",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "Yoga Body Sculpt",
-      "time": "7:30 pm",
-      "duration": 60,
       "instructor": "Rachael C.",
       "tags": [
-        "not_cardio"
+        "steady"
       ]
     }
   ]
