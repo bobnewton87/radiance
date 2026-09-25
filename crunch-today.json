@@ -3,98 +3,53 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-09-24T14:31:00.523Z",
-  "date": "2026-09-24",
-  "classCount": 10,
+  "scrapedAt": "2026-09-25T14:51:31.017Z",
+  "date": "2026-09-25",
+  "classCount": 5,
   "classes": [
     {
-      "name": "The Ride: Let the Beat Drop",
+      "name": "Strong-er HIIT (HIITZone)",
       "time": "5:30 am",
       "duration": 45,
       "instructor": "Serena G",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "Top it Off",
-      "time": "8:30 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "Top to Bottom Burnout",
-      "time": "9:00 am",
-      "duration": 30,
-      "instructor": "Serena G",
-      "tags": [
-        "unknown"
-      ]
-    },
-    {
-      "name": "The Ride: Let the Beat Drop",
-      "time": "9:00 am",
-      "duration": 45,
-      "instructor": "Rachael C.",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Angie",
-      "tags": [
-        "steady"
-      ]
-    },
-    {
-      "name": "ExtremeHIIT (HIITZone)",
-      "time": "9:30 am",
-      "duration": 45,
-      "instructor": "Gideon E",
       "tags": [
         "intervals"
       ]
     },
     {
       "name": "Yoga Body Sculpt",
-      "time": "10:30 am",
+      "time": "8:30 am",
       "duration": 60,
-      "instructor": "Sangita R",
+      "instructor": "Sudeepta D",
       "tags": [
         "not_cardio"
       ]
     },
     {
-      "name": "Strong-er HIIT (HIITZone)",
-      "time": "12:00 pm",
-      "duration": 45,
-      "instructor": "Lauren I",
+      "name": "So You Think You Can't Dance",
+      "time": "9:30 am",
+      "duration": 60,
+      "instructor": "Emily E",
       "tags": [
-        "intervals"
+        "steady"
+      ]
+    },
+    {
+      "name": "The Ride",
+      "time": "9:30 am",
+      "duration": 45,
+      "instructor": "Serena G",
+      "tags": [
+        "steady"
       ]
     },
     {
       "name": "P3 Pilates",
-      "time": "5:30 pm",
+      "time": "10:30 am",
       "duration": 45,
-      "instructor": "Rachael C.",
+      "instructor": "Serena G",
       "tags": [
         "not_cardio"
-      ]
-    },
-    {
-      "name": "ZUMBA ®",
-      "time": "6:30 pm",
-      "duration": 60,
-      "instructor": "Rachael C.",
-      "tags": [
-        "steady"
       ]
     }
   ]
