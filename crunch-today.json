@@ -3,35 +3,44 @@
   "address": "510 N Watters Rd, Allen, TX 75013",
   "phone": "469.824.3022",
   "locationUrl": "https://www.crunch.com/locations/allen",
-  "scrapedAt": "2026-11-06T17:01:03.982Z",
-  "date": "2026-11-06",
-  "classCount": 3,
+  "scrapedAt": "2026-11-07T15:58:08.456Z",
+  "date": "2026-11-07",
+  "classCount": 4,
   "classes": [
     {
-      "name": "Strong-er HIIT (HIITZone)",
-      "time": "5:30 am",
+      "name": "Superset HIIT (HIITZone)",
+      "time": "9:00 am",
       "duration": 45,
-      "instructor": "Robyn R",
+      "instructor": "Braeden H",
       "tags": [
         "intervals"
       ]
     },
     {
-      "name": "So You Think You Can't Dance",
+      "name": "Barbell 45",
+      "time": "9:00 am",
+      "duration": 45,
+      "instructor": "Deborah Y",
+      "tags": [
+        "unknown"
+      ]
+    },
+    {
+      "name": "The Ride",
       "time": "9:30 am",
-      "duration": 60,
-      "instructor": "Emily E",
+      "duration": 45,
+      "instructor": "Ricardo G",
       "tags": [
         "steady"
       ]
     },
     {
-      "name": "P3 Pilates",
-      "time": "10:30 am",
-      "duration": 45,
-      "instructor": "Mona D",
+      "name": "ZUMBA ®",
+      "time": "10:00 am",
+      "duration": 60,
+      "instructor": "Jackie",
       "tags": [
-        "not_cardio"
+        "steady"
       ]
     }
   ]
